@@ -1,1 +1,7 @@
-This file contains all  the models's description 
+This file contains the download urls of all the models in the repository.
+
+unet_resnet50
+https://drive.google.com/file/d/1lCV9NnOmVwMgTl0neFzW8ofMU9BnPaXS/view?usp=sharing
+
+gan_mso2
+https://drive.google.com/file/d/1Q4MxwYsNnUwFBQfmdRM7agJ4Xj-10Ra9/view?usp=sharing
