@@ -9,15 +9,15 @@ To train the models forced a public data set available on the kaggle platform [h
 Bone suppression images were obtained using the Dual energy subtraction technique. They have a resolution of 1024x1024.
 
 # Training
-The preprocessing and training routine for each specific model is distributed in different jupyter notebooks in the [training scripts](train scripts) folder.
+The preprocessing and training routine for each specific model is distributed in different jupyter notebooks in the training scripts folder.
 
 # Models
-The models folder contains the deployed and deployed models. So far two models are available.
+The models folder contains the deployed models. So far two models are available.
 unet_resnet50: Based on a unet architecture with a pretrained resnet50 as encoder and a single channel attention technique.
 gan_mso2: Model based on a pix2pix GAN architecture.
 
 # Requirements
-Each implemented model has its own requirements. The [model requirement folder](model requirement) contains several .txt files where the requirements of each model are described. The [app_requirement.txt](app_requirements.txt.txt) file contains the requirements for the model deployment script.
+Each implemented model has its own requirements. The model requirement folder contains several .txt files where the requirements of each model are described. The [app_requirement.txt](app_requirements.txt.txt) file contains the requirements for the model deployment script.
 #### Deployment script requirements
 1. gradio
 2. opencv-python-headless
