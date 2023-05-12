@@ -12,7 +12,7 @@ Bone suppression images were obtained using the Dual energy subtraction techniqu
 The preprocessing and training routine for each specific model is distributed in different jupyter notebooks in the training scripts folder.
 
 # Models
-The models folder contains the deployed models. So far two models are available.
+The models folder contains the deployed models. The models are available through a url contained in the [model.txt](models/models.txt) file. So far two models are available.
 unet_resnet50: Based on a unet architecture with a pretrained resnet50 as encoder and a single channel attention technique.
 gan_mso2: Model based on a pix2pix GAN architecture.
 
@@ -26,4 +26,4 @@ Each implemented model has its own requirements. The model requirement folder co
 5. tensorflow
 
 # Try the models
-The models can be used by running the [app.py](app.py) script. This script displays a gradio interface that makes it easy to test the deployed models. You can also try it through this hugging face space.
+The models can be used by running the [app.py](app.py) script. This script displays a gradio interface that makes it easy to test the deployed models. You must have previously downloaded the models you want to test through the [model.txt](models/models.txt) file.
