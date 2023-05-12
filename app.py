@@ -3,6 +3,7 @@ from cv2 import imread, imwrite, COLOR_BGR2GRAY, COLOR_GRAY2BGR, equalizeHist, c
 from fastai.learner import load_learner
 from numpy import asarray, float32, uint8, zeros, reshape
 
+from gradio.components import Textbox
 
 import tensorflow as tf
 import numpy as np
@@ -87,11 +88,11 @@ def get_pred(model, image, steeps=1):
   return pred
 
 
-def load_custom_model(model_name):
+def load_custom_model(model_name, path_model):
   if(model_name == "unet_resnet50"):
-    model = load_learner('unet_resnet50_mso_100epoch.pkl')
+    model = load_learner(path_model)
   elif(model_name=='GAN_pix2pix'):
-    model =tf.keras.models.load_model('gan_mso2.h5')
+    model =tf.keras.models.load_model(path_model)
   return  model
 
 def get_custom_pred(model, model_name, img):  
@@ -102,8 +103,8 @@ def get_custom_pred(model, model_name, img):
   return predf
 
 
-def get_BSIMG(img, model_name):
-  pred = get_custom_pred(load_custom_model(model_name), model_name, img)
+def get_BSIMG(img, model_name, path_model):
+  pred = get_custom_pred(load_custom_model(model_name, path_model), model_name, img)
   return pred
 
   # Creating gradio interface
@@ -112,7 +113,7 @@ model_select = Dropdown(
     default="unet_resnet50",
     label="Select model"    
 )
+path_model = Textbox(label='Path model')
 
-
-demo = gr.Interface(fn = get_BSIMG, inputs=['image', model_select], outputs='image')
+demo = gr.Interface(fn = get_BSIMG, inputs=['image', model_select, path_model], outputs='image')
 demo.launch()
