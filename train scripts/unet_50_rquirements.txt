@@ -1,0 +1,5 @@
+fastai
+wwf
+torchvision
+torch
+opencv-python-headles
