@@ -5,8 +5,8 @@ This repository contains the implementation and deployment of various Deep learn
 ![Bonse supression imgae](bsi.PNG)
 
 # Dataset
-To train the models forced a public data set available on the kaggle platform [here](https://www.kaggle.com/datasets/hmchuong/xray-bone-shadow-supression). El dataset cuenta con dos versiones de los datos una versión contiene 4080 pares de imágenes de rayos x de tórax y su correspondiente  imagen de supresión osea,  la otra contiene  241 pares de imágenes originales sin ninguna técnica de aumentacion de datos.
-Bone suppression images were obtained using the Dual energy subtraction technique. They have a resolution of 1024x1024.
+To train the models forced a public data set available on the kaggle platform [here](https://www.kaggle.com/datasets/hmchuong/xray-bone-shadow-supression). 
+Bone suppression images were obtained using the Dual energy subtraction technique. They have a resolution of 1024x1024. The dataset has two versions of the data, one version contains 4080 pairs of chest x-ray images and their corresponding bone suppression image, the other contains 241 pairs of original images without any data augmentation technique.
 
 # Training
 The preprocessing and training routine for each specific model is distributed in different jupyter notebooks in the training scripts folder.
