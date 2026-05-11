@@ -1,0 +1,29 @@
+{
+  "checkpoint_filename": "gan_mso2_retrained_v1.keras",
+  "checkpoint_sha256": "e6d72033d643f378fcd7722d630abf935d590831da5911c8a0f0deaa31f375bd",
+  "created_at_utc": "2026-05-11T16:42:52.954595+00:00",
+  "dataset_slug": "hmchuong/xray-bone-shadow-supression",
+  "git_commit": null,
+  "hyperparameters": {
+    "batch_size": 4,
+    "dataset_root": "/kaggle/input/datasets/hmchuong/xray-bone-shadow-supression",
+    "epochs": 50,
+    "image_size": 256,
+    "lambda_l1": 100.0,
+    "learning_rate": 0.0002,
+    "limit": null,
+    "model_key": "gan_mso2",
+    "output_dir": "/kaggle/working/training_runs/gan_full_v1/gan_mso2",
+    "pretrained": true,
+    "seed": 2026,
+    "splits_path": "/kaggle/working/training_runs/gan_full_v1/splits.json"
+  },
+  "metrics_path": null,
+  "model_key": "gan_mso2",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "python": "3.12.12",
+  "schema_version": 1,
+  "seed": 2026,
+  "split_path": "/kaggle/working/training_runs/gan_full_v1/splits.json",
+  "training_environment": "kaggle-p100"
+}

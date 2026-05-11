@@ -1,0 +1,92 @@
+{
+  "models": [
+    {
+      "checkpoint_filename": "gan_mso2_retrained_v1.keras",
+      "checkpoint_sha256": "e6d72033d643f378fcd7722d630abf935d590831da5911c8a0f0deaa31f375bd",
+      "device": "cpu",
+      "model_key": "gan_mso2",
+      "split": "test",
+      "step_results": [
+        {
+          "aggregate": {
+            "cpu_seconds_per_image": 0.03861476875675555,
+            "mae": 0.7542635427938925,
+            "psnr": 2.1865245060692278,
+            "rmse": 0.7789474245899954,
+            "ssim": 0.03931388435743755
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 0
+        },
+        {
+          "aggregate": {
+            "cpu_seconds_per_image": 0.21023664610810544,
+            "mae": 0.011330240192143497,
+            "psnr": 27.456803206794085,
+            "rmse": 0.04633114035145186,
+            "ssim": 0.7490011658478876
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 1
+        },
+        {
+          "aggregate": {
+            "cpu_seconds_per_image": 0.3947305257297327,
+            "mae": 0.3561687727232237,
+            "psnr": 7.506420169593715,
+            "rmse": 0.42224381158205115,
+            "ssim": -0.05166973167642574
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 2
+        },
+        {
+          "aggregate": {
+            "cpu_seconds_per_image": 0.5904673059729777,
+            "mae": 0.21927019994001132,
+            "psnr": 10.164079958304587,
+            "rmse": 0.33298580308011533,
+            "ssim": -0.0077162774695786985
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 3
+        },
+        {
+          "aggregate": {
+            "cpu_seconds_per_image": 0.7833653204594568,
+            "mae": 0.17265927821800514,
+            "psnr": 13.29047487916937,
+            "rmse": 0.2674026907534459,
+            "ssim": 0.03226979109704754
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 4
+        },
+        {
+          "aggregate": {
+            "cpu_seconds_per_image": 0.9709363531621752,
+            "mae": 0.2895067267723986,
+            "psnr": 9.133882049253037,
+            "rmse": 0.39478900406050355,
+            "ssim": -0.021829571793745277
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 5
+        }
+      ]
+    }
+  ],
+  "schema_version": 1
+}

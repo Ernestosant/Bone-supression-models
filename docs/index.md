@@ -1,7 +1,7 @@
 # Bone Suppression Models Documentation
 
-This documentation describes the research context, model registry, inference workflow, and
-development process for the Bone Suppression Models repository.
+This documentation describes the research context, reproducible training pipeline, model registry,
+inference workflow, evaluation protocol, and development process.
 
 ## Intended Audience
 
@@ -9,24 +9,22 @@ development process for the Bone Suppression Models repository.
 - Engineers packaging experimental models into reproducible inference tools.
 - Students documenting medical imaging experiments for professional review.
 
-## Project Goals
-
-- Keep inference code reusable instead of locking all behavior inside a notebook or demo script.
-- Make model availability explicit through a registry.
-- Separate dataset, model, inference, and development documentation.
-- Avoid committing large datasets or checkpoints to Git.
-
 ## Current Capabilities
 
-- Gradio demo for single-image inference.
-- CLI entrypoint for scriptable inference.
-- Shared preprocessing utilities for RGB conversion, histogram equalization, resizing, and
-  normalization.
+- Deterministic JSRT/BSE_JSRT pairing and 70/15/15 split generation with seed `2026`.
+- Kaggle retraining notebook for `gan_mso2` and `unet_resnet50`.
+- Quantitative evaluation utilities for MAE, RMSE, PSNR, SSIM, and CPU inference time.
+- Gradio and CLI inference with `auto` or CPU-only device selection.
+- Registry fields for public checkpoint links, checksums, metrics, examples, and artifacts.
 - Unit and smoke tests that do not require real checkpoint files.
 
 ## Documentation Map
 
-- [Dataset](dataset.md): source dataset, access, and preprocessing assumptions.
-- [Models](models.md): architecture summaries, checkpoint status, and limitations.
+- [Dataset](dataset.md): source dataset, access, split policy, and preprocessing assumptions.
+- [Training](training.md): Kaggle and local retraining workflow.
+- [Evaluation](evaluation.md): holdout metrics and example generation.
+- [Results](results.md): final results table template and publication checklist.
+- [Models](models.md): architecture summaries, checkpoint policy, and registry fields.
 - [Inference](inference.md): CLI and Gradio usage.
+- [Provenance](provenance.md): dataset, historical weights, and notebook provenance.
 - [Development](development.md): setup, tests, code style, and contribution workflow.

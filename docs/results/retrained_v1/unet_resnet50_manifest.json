@@ -1,0 +1,28 @@
+{
+  "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
+  "checkpoint_sha256": "0a4be7cea81f7c8013b46ad276e8dd92b5bbd8e9689754faddd293621b044b3a",
+  "created_at_utc": "2026-05-11T18:41:14.355515+00:00",
+  "dataset_slug": "hmchuong/xray-bone-shadow-supression",
+  "git_commit": null,
+  "hyperparameters": {
+    "batch_size": 4,
+    "dataset_root": "/kaggle/input/datasets/hmchuong/xray-bone-shadow-supression",
+    "epochs": 50,
+    "image_size": 256,
+    "learning_rate": 0.0002,
+    "limit": null,
+    "model_key": "unet_resnet50",
+    "output_dir": "/kaggle/working/training_runs/unet_full_v1/unet_resnet50",
+    "pretrained": true,
+    "seed": 2026,
+    "splits_path": "/kaggle/working/training_runs/unet_full_v1/splits.json"
+  },
+  "metrics_path": null,
+  "model_key": "unet_resnet50",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "python": "3.12.12",
+  "schema_version": 1,
+  "seed": 2026,
+  "split_path": "/kaggle/working/training_runs/unet_full_v1/splits.json",
+  "training_environment": "kaggle-p100"
+}

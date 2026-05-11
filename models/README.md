@@ -7,7 +7,9 @@ The canonical model metadata lives in `configs/model_registry.json`.
 
 | Key | Framework | Expected file | Current status |
 | --- | --- | --- | --- |
-| `gan_mso2` | TensorFlow/Keras | `gan_mso2.h5` | Google Drive link available |
-| `unet_resnet50` | FastAI | `unet_resnet50.pkl` | Original Google Drive link returns 404 |
+| `gan_mso2` | TensorFlow/Keras | `gan_mso2_retrained_v1.keras` | Trained/evaluated; Drive upload pending |
+| `unet_resnet50` | FastAI | `unet_resnet50_retrained_v1.pkl` | Trained/evaluated; Drive upload pending |
 
-Large checkpoint files should remain outside Git history.
+Large checkpoint files should remain outside Git history. After a Kaggle retraining run, upload
+checkpoints to Google Drive, publish direct download links, and verify SHA256 values against the
+registry before setting `available` to `true`.

@@ -1,0 +1,92 @@
+{
+  "models": [
+    {
+      "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
+      "checkpoint_sha256": "0a4be7cea81f7c8013b46ad276e8dd92b5bbd8e9689754faddd293621b044b3a",
+      "device": "auto",
+      "model_key": "unet_resnet50",
+      "split": "test",
+      "step_results": [
+        {
+          "aggregate": {
+            "inference_seconds_per_image": 0.03834501397300669,
+            "mae": 0.7542635444048289,
+            "psnr": 2.1865244607264245,
+            "rmse": 0.7789474284219576,
+            "ssim": 0.03931388448894867
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 0
+        },
+        {
+          "aggregate": {
+            "inference_seconds_per_image": 0.6356853820810815,
+            "mae": 0.003032646700548129,
+            "psnr": 36.057931635945145,
+            "rmse": 0.03431639736812651,
+            "ssim": 0.8747402543460997
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 1
+        },
+        {
+          "aggregate": {
+            "inference_seconds_per_image": 0.8797970945945938,
+            "mae": 0.0034876804893920546,
+            "psnr": 37.566403777436875,
+            "rmse": 0.039872975444614926,
+            "ssim": 0.8263365836327676
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 2
+        },
+        {
+          "aggregate": {
+            "inference_seconds_per_image": 1.140543068486467,
+            "mae": 0.004944182436579345,
+            "psnr": 35.970157242411055,
+            "rmse": 0.05087692113839105,
+            "ssim": 0.6851476865327273
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 3
+        },
+        {
+          "aggregate": {
+            "inference_seconds_per_image": 1.4016917928919046,
+            "mae": 0.005655499226860057,
+            "psnr": 35.37576011343354,
+            "rmse": 0.055698493866578075,
+            "ssim": 0.6036248962459632
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 4
+        },
+        {
+          "aggregate": {
+            "inference_seconds_per_image": 1.6743306269188882,
+            "mae": 0.006113964769856712,
+            "psnr": 35.04870881409303,
+            "rmse": 0.05859060324684939,
+            "ssim": 0.5460103385894979
+          },
+          "counts": {
+            "evaluated": 37
+          },
+          "steps": 5
+        }
+      ]
+    }
+  ],
+  "schema_version": 1
+}

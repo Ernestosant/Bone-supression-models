@@ -1,41 +1,51 @@
 # Models
 
-Model metadata is centralized in `configs/model_registry.json`. The registry is the source of
-truth for framework type, expected checkpoint filename, default inference steps, and availability.
+Model metadata is centralized in `configs/model_registry.json` and packaged in
+`src/bone_suppression/resources/model_registry.json`.
+
+## Registry Fields
+
+Each model entry records framework, architecture, availability, checkpoint filename, public download
+URL, SHA256, device support, example panels, metrics, preprocessing, and training artifact URL.
+
+`available` should remain `false` while the checkpoint URL or checksum is a placeholder. Set it to
+`true` only after a public Drive download link has been verified and the local SHA256 matches the
+registry.
 
 ## `gan_mso2`
 
 - Framework: TensorFlow/Keras.
 - Architecture: Pix2Pix-style conditional GAN.
-- Expected checkpoint: `gan_mso2.h5`.
-- Status: the Google Drive link opens, but the file should be downloaded and validated before
-  publishing generated examples or metrics.
-- Default inference steps: `2`.
+- Retrained-v1 checkpoint: `gan_mso2_retrained_v1.keras`.
+- Device support: CPU and GPU.
+- Current status: trained and evaluated; public Drive upload pending.
 
 The inference routine applies histogram equalization, resizes large inputs to 256 x 256, normalizes
-to `[-1, 1]`, calls the generator with `training=True` for compatibility with the original code, and
-converts the output back to an 8-bit RGB image.
+to `[-1, 1]`, calls the generator with `training=True` for compatibility, and converts the output
+back to an 8-bit RGB image.
 
 ## `unet_resnet50`
 
 - Framework: FastAI.
-- Architecture: U-Net with a pretrained ResNet50 encoder and single-channel attention component.
-- Expected checkpoint: `unet_resnet50.pkl`.
-- Status: pending. The historical Google Drive URL currently returns `404`.
-- Default inference steps: `2`.
+- Architecture: U-Net with a pretrained ResNet50 encoder.
+- Retrained-v1 checkpoint: `unet_resnet50_retrained_v1.pkl`.
+- Device support: CPU and GPU.
+- Current status: trained and evaluated; public Drive upload pending.
 
-The model is retained in the registry so the project can support it again once a valid checkpoint is
-available. Until then, README examples and reproducibility claims should not rely on this model.
+The historical U-Net checkpoint URL returned 404 during review. The retrained-v1 checkpoint should
+be presented as a new reproducible artifact, not as a recovered historical weight.
 
 ## Checkpoint Policy
 
 Do not commit model weights to Git. Store downloaded checkpoints in `models/checkpoints/` or another
 local path and pass the path to the CLI or Gradio app. The repository `.gitignore` excludes common
-checkpoint formats such as `.h5`, `.pkl`, `.pt`, `.pth`, and `.ckpt`.
+checkpoint formats such as `.h5`, `.keras`, `.pkl`, `.pt`, `.pth`, and `.ckpt`.
 
-## Known Gaps
+Every published retrained-v1 checkpoint must have:
 
-- No quantitative evaluation metrics are currently included.
-- Training notebooks are referenced historically but are not present in the repository.
-- The model registry records availability, not checksum verification. Add hashes before using this
-  project for strict reproducibility.
+- A public Google Drive URL.
+- A SHA256 checksum in the registry.
+- A manifest next to the checkpoint.
+- GPU holdout metrics in `docs/results.md`; optional CPU checks are for user-facing inference
+  support.
+- Example panels in `docs/assets/examples/retrained_v1/`.

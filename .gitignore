@@ -15,7 +15,12 @@ data/
 datasets/
 outputs/
 models/checkpoints/
+training_runs/
+runs/
+kaggle/working/
+kaggle/input/
 *.h5
+*.keras
 *.pkl
 *.pth
 *.pt
@@ -26,5 +31,8 @@ models/checkpoints/
 # Local environment
 .env
 .env.*
+.kaggle/
+kaggle.json
+**/kaggle.json
 .DS_Store
 Thumbs.db

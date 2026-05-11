@@ -15,11 +15,12 @@ def test_predict_from_ui_requires_checkpoint() -> None:
 def test_predict_from_ui_calls_inference(monkeypatch) -> None:
     calls = {}
 
-    def fake_run_inference(model_key, checkpoint_path, image, steps=None):
+    def fake_run_inference(model_key, checkpoint_path, image, steps=None, device="auto"):
         calls["model_key"] = model_key
         calls["checkpoint_path"] = checkpoint_path
         calls["shape"] = image.shape
         calls["steps"] = steps
+        calls["device"] = device
         return np.ones((4, 4, 3), dtype=np.uint8)
 
     monkeypatch.setattr(gradio_app, "run_inference", fake_run_inference)
@@ -27,13 +28,15 @@ def test_predict_from_ui_calls_inference(monkeypatch) -> None:
     output = gradio_app.predict_from_ui(
         np.zeros((8, 8, 3), dtype=np.uint8),
         "gan_mso2",
-        "models/checkpoints/gan_mso2.h5",
+        "models/checkpoints/gan_mso2_retrained_v1.keras",
         2,
+        "cpu",
     )
 
     assert output.shape == (4, 4, 3)
     assert calls["model_key"] == "gan_mso2"
     assert calls["steps"] == 2
+    assert calls["device"] == "cpu"
 
 
 def test_available_model_choices_filters_pending_models() -> None:
@@ -47,8 +50,13 @@ def test_available_model_choices_filters_pending_models() -> None:
             available=True,
             checkpoint_url="https://example.com/gan.h5",
             checkpoint_filename="gan.h5",
+            checkpoint_sha256="abc123",
             default_steps=2,
+            device_support=("cpu",),
+            examples=(),
+            metrics={},
             preprocessing=("RGB conversion",),
+            training_artifacts_url="https://example.com/artifacts",
             notes="Available.",
         ),
         "unet_resnet50": ModelSpec(
@@ -60,8 +68,13 @@ def test_available_model_choices_filters_pending_models() -> None:
             available=False,
             checkpoint_url="https://example.com/unet.pkl",
             checkpoint_filename="unet.pkl",
+            checkpoint_sha256="abc123",
             default_steps=2,
+            device_support=("cpu",),
+            examples=(),
+            metrics={},
             preprocessing=("RGB conversion",),
+            training_artifacts_url="https://example.com/artifacts",
             notes="Pending.",
         ),
     }

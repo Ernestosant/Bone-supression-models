@@ -15,6 +15,7 @@ def predict_from_ui(
     model_key: str,
     checkpoint_path: str,
     steps: int | float | None = None,
+    device: str = "auto",
 ) -> np.ndarray:
     """Validate UI inputs and run inference."""
     if image is None:
@@ -25,7 +26,13 @@ def predict_from_ui(
         raise ValueError("Provide a local checkpoint path before running inference.")
 
     normalized_steps = int(steps) if steps is not None else None
-    return run_inference(model_key, Path(checkpoint_path), image, steps=normalized_steps)
+    return run_inference(
+        model_key,
+        Path(checkpoint_path),
+        image,
+        steps=normalized_steps,
+        device=device,
+    )
 
 
 def create_demo():
@@ -55,7 +62,7 @@ def create_demo():
                 )
                 checkpoint_path = gr.Textbox(
                     label="Local checkpoint path",
-                    placeholder="models/checkpoints/gan_mso2.h5",
+                    placeholder="models/checkpoints/gan_mso2_retrained_v1.keras",
                 )
                 steps = gr.Slider(
                     minimum=1,
@@ -64,12 +71,17 @@ def create_demo():
                     step=1,
                     label="Inference steps",
                 )
+                device = gr.Radio(
+                    choices=["auto", "cpu"],
+                    value="auto",
+                    label="Device",
+                )
                 run_button = gr.Button("Run inference", variant="primary")
             output = gr.Image(label="Bone-suppressed output", type="numpy")
 
         run_button.click(
             fn=predict_from_ui,
-            inputs=[image, model_key, checkpoint_path, steps],
+            inputs=[image, model_key, checkpoint_path, steps, device],
             outputs=output,
         )
 
