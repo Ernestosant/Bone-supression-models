@@ -5,8 +5,8 @@ from bone_suppression.artifacts import sha256_file
 
 def test_sha256_file(tmp_path) -> None:
     payload = tmp_path / "payload.txt"
-    payload.write_text("bone suppression\n", encoding="utf-8")
+    payload.write_bytes(b"bone suppression\n")
 
-    expected = "b103e913081630762a48490dc5cfcbcf833b1fc6e2a21e4cea4ccf5212295913"
+    expected = "b574388b49306ba6bf7661de4f39974a1ede7c4a7e26262d18e93b87f91bd465"
 
     assert sha256_file(payload) == expected
