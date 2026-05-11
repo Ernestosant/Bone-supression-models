@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Data, checkpoints, and generated outputs
+data/
+datasets/
+outputs/
+models/checkpoints/
+*.h5
+*.pkl
+*.pth
+*.pt
+*.ckpt
+*.tif
+*.tiff
+
+# Local environment
+.env
+.env.*
+.DS_Store
+Thumbs.db

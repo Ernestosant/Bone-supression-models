@@ -1,5 +1,0 @@
-gradio
-opencv-python-headless
-fastai
-numpy
-tensorflow

@@ -1,5 +1,0 @@
-tensorflow
-opencv-python-headless
-numpy
-matplotlib
-ipython
