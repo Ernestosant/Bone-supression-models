@@ -115,6 +115,18 @@ documented `0,1,2,3,4,5` autoregressive sweep.
 | `gan_mso2` retrained v1 | 1 | 0.011330 | 0.046331 | 27.456801 | 0.749001 | 0.108497 |
 | `unet_resnet50` retrained v1 | 1 | 0.003033 | 0.034316 | 36.057932 | 0.874740 | 0.635685 |
 
+## Best Model Examples
+
+The best quantitative retrained-v1 checkpoint is `unet_resnet50` at autoregressive step `1`.
+The examples below come from the deterministic test split and show the input X-ray, the one-step
+model output, and the paired BSE target used for evaluation.
+
+![JPCLN003 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCLN003_unet_resnet50_step1_input_output.png)
+
+![JPCNN028 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCNN028_unet_resnet50_step1_input_output.png)
+
+![JPCNN072 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCNN072_unet_resnet50_step1_input_output.png)
+
 See [docs/training.md](docs/training.md), [docs/evaluation.md](docs/evaluation.md),
 [docs/results.md](docs/results.md), and [docs/provenance.md](docs/provenance.md).
 
