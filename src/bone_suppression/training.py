@@ -52,8 +52,20 @@ def train_gan_mso2(config: TrainConfig) -> dict[str, Any]:
     splits = load_splits(config.splits_path, config.dataset_root)
     train_pairs = _limit_pairs(splits["train"], config.limit)
     valid_pairs = _limit_pairs(splits["validation"], config.limit)
-    train_ds = _tf_pair_dataset(train_pairs, config.image_size, config.batch_size, shuffle=True)
-    valid_ds = _tf_pair_dataset(valid_pairs, config.image_size, config.batch_size, shuffle=False)
+    train_ds = _tf_pair_dataset(
+        train_pairs,
+        config.image_size,
+        config.batch_size,
+        shuffle=True,
+        seed=config.seed,
+    )
+    valid_ds = _tf_pair_dataset(
+        valid_pairs,
+        config.image_size,
+        config.batch_size,
+        shuffle=False,
+        seed=config.seed,
+    )
 
     generator = _build_tf_generator(config.image_size)
     discriminator = _build_tf_discriminator(config.image_size)
@@ -227,7 +239,13 @@ def _load_normalized_image(path: Path, image_size: int) -> np.ndarray:
     return array / 127.5 - 1.0
 
 
-def _tf_pair_dataset(pairs: list[ImagePair], image_size: int, batch_size: int, shuffle: bool):
+def _tf_pair_dataset(
+    pairs: list[ImagePair],
+    image_size: int,
+    batch_size: int,
+    shuffle: bool,
+    seed: int,
+):
     import tensorflow as tf
 
     def generator():
@@ -242,7 +260,7 @@ def _tf_pair_dataset(pairs: list[ImagePair], image_size: int, batch_size: int, s
     if shuffle:
         dataset = dataset.shuffle(
             buffer_size=len(pairs),
-            seed=DEFAULT_SEED,
+            seed=seed,
             reshuffle_each_iteration=True,
         )
     return dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)

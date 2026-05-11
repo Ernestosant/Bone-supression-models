@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from bone_suppression.artifacts import sha256_file, write_json
 from bone_suppression.dataset import DATASET_SLUG, load_splits
-from bone_suppression.inference import predict_model, run_inference
+from bone_suppression.inference import predict_model
 from bone_suppression.metrics import aggregate_metrics, image_metrics
 from bone_suppression.model_io import load_model
 from bone_suppression.registry import get_model_spec
@@ -43,19 +43,16 @@ def evaluate_checkpoint(
         raise KeyError(f"Unknown split {split!r}. Available splits: {available}.")
     pairs = split_pairs[split][:limit]
 
+    spec = get_model_spec(model_key)
+    model = load_model(spec, checkpoint_path, device=device)
+
     records: list[dict[str, Any]] = []
     for pair in pairs:
         input_image = _read_rgb(pair.input_path)
         target_image = _read_rgb(pair.target_path)
 
         start = time.perf_counter()
-        prediction = run_inference(
-            model_key,
-            checkpoint_path,
-            input_image,
-            steps=steps,
-            device=device,
-        )
+        prediction = predict_model(model, spec, input_image, steps=steps)
         elapsed = time.perf_counter() - start
 
         target_for_metric = _resize_like(target_image, prediction)
