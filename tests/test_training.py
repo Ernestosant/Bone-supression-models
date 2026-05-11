@@ -4,6 +4,9 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import numpy as np
+from PIL import Image
+
 from bone_suppression import training
 from bone_suppression.dataset import ImagePair
 
@@ -53,3 +56,17 @@ def test_tf_pair_dataset_uses_configured_shuffle_seed(monkeypatch) -> None:
     assert dataset.shuffle_seed == 1234
     assert dataset.batch_size == 2
     assert dataset.prefetch_value == "autotune"
+
+
+def test_load_normalized_image_uses_legacy_mso_preprocessing(tmp_path) -> None:
+    image = np.tile(np.arange(16, dtype=np.uint8).reshape(4, 4), (3, 1, 1)).transpose(1, 2, 0)
+    path = tmp_path / "input.png"
+    Image.fromarray(image).save(path)
+
+    normalized = training._load_normalized_image(path, image_size=4)
+
+    assert normalized.shape == (4, 4, 3)
+    assert normalized.dtype == np.float32
+    assert normalized.min() >= -1.0
+    assert normalized.max() <= 1.0
+    assert normalized[0, 0, 0] > normalized[-1, -1, 0]

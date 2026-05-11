@@ -5,7 +5,7 @@
       "display_name": "U-Net ResNet50 Retrained v1",
       "framework": "fastai",
       "architecture": "FastAI U-Net with a pretrained ResNet50 encoder, retrained on deterministic JSRT/BSE_JSRT splits",
-      "status": "trained_pending_drive_upload",
+      "status": "superseded_preprocessing_mismatch_retrain_required",
       "available": false,
       "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_UNET_RESNET50_RETRAINED_V1_FILE_ID",
       "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
@@ -16,9 +16,9 @@
         "gpu"
       ],
       "examples": [
-        "docs/assets/examples/retrained_v1/JPCLN003_u-net_resnet50_steps.png",
-        "docs/assets/examples/retrained_v1/JPCNN028_u-net_resnet50_steps.png",
-        "docs/assets/examples/retrained_v1/JPCNN072_u-net_resnet50_steps.png"
+        "docs/assets/examples/retrained_v1/JPCLN003_notebook_preprocessing_input_target.png",
+        "docs/assets/examples/retrained_v1/JPCNN028_notebook_preprocessing_input_target.png",
+        "docs/assets/examples/retrained_v1/JPCNN072_notebook_preprocessing_input_target.png"
       ],
       "metrics": {
         "selected_step": 1,
@@ -71,15 +71,19 @@
             "ssim": 0.5460103385894979,
             "inference_seconds_per_image": 1.6743306269188882
           }
-        }
+        },
+        "superseded": true,
+        "warning": "Metrics were computed before restoring the historical MSO preprocessing path and must not be cited as final research results."
       },
       "preprocessing": [
-        "RGB conversion",
-        "histogram equalization",
+        "OpenCV default 8-bit image read",
+        "intensity inversion with 255-image",
+        "grayscale histogram equalization",
+        "RGB expansion",
         "temporary TIFF handoff for FastAI test_dl"
       ],
       "training_artifacts_url": "https://drive.google.com/drive/folders/REPLACE_WITH_RETRAINED_V1_ARTIFACT_FOLDER_ID",
-      "notes": "Retrained-v1 checkpoint trained and evaluated on Kaggle P100. Public Drive link is still pending because the current Drive connector does not expose generic binary upload. This is not the historical checkpoint whose URL returned 404.",
+      "notes": "Superseded retrained-v1 checkpoint: review of Unet_MSO.ipynb and pix2pix.ipynb showed that training/evaluation must use the historical OpenCV 8-bit, 255-image, equalizeHist preprocessing path. Retrain and reevaluate before publication. This is not the historical checkpoint whose URL returned 404.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-unet-v1-checkpoint"
     },
     {
@@ -87,7 +91,7 @@
       "display_name": "Pix2Pix GAN MSO2 Retrained v1",
       "framework": "tensorflow",
       "architecture": "Pix2Pix-style conditional GAN retrained on deterministic JSRT/BSE_JSRT splits",
-      "status": "trained_pending_drive_upload",
+      "status": "superseded_preprocessing_mismatch_retrain_required",
       "available": false,
       "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_GAN_MSO2_RETRAINED_V1_FILE_ID",
       "checkpoint_filename": "gan_mso2_retrained_v1.keras",
@@ -98,9 +102,9 @@
         "gpu"
       ],
       "examples": [
-        "docs/assets/examples/retrained_v1/JPCLN003_gan_mso2_steps.png",
-        "docs/assets/examples/retrained_v1/JPCNN028_gan_mso2_steps.png",
-        "docs/assets/examples/retrained_v1/JPCNN072_gan_mso2_steps.png"
+        "docs/assets/examples/retrained_v1/JPCLN003_notebook_preprocessing_input_target.png",
+        "docs/assets/examples/retrained_v1/JPCNN028_notebook_preprocessing_input_target.png",
+        "docs/assets/examples/retrained_v1/JPCNN072_notebook_preprocessing_input_target.png"
       ],
       "metrics": {
         "selected_step": 1,
@@ -153,16 +157,20 @@
             "ssim": -0.021601184957447117,
             "inference_seconds_per_image": 0.2857051842702768
           }
-        }
+        },
+        "superseded": true,
+        "warning": "Metrics were computed before restoring the historical MSO preprocessing path and must not be cited as final research results."
       },
       "preprocessing": [
-        "RGB conversion",
-        "histogram equalization",
+        "OpenCV default 8-bit image read",
+        "intensity inversion with 255-image",
+        "grayscale histogram equalization",
+        "RGB expansion",
         "resize to 256x256 when larger",
         "normalization to [-1, 1]"
       ],
       "training_artifacts_url": "https://drive.google.com/drive/folders/REPLACE_WITH_RETRAINED_V1_ARTIFACT_FOLDER_ID",
-      "notes": "Retrained-v1 checkpoint trained and evaluated on Kaggle P100. Public Drive link is still pending because the current Drive connector does not expose generic binary upload. The old historical GAN link is intentionally not used for new quantitative claims.",
+      "notes": "Superseded retrained-v1 checkpoint: review of Unet_MSO.ipynb and pix2pix.ipynb showed that training/evaluation must use the historical OpenCV 8-bit, 255-image, equalizeHist preprocessing path. Retrain and reevaluate before publication. This is not the historical checkpoint whose URL returned 404.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-gan-mso2-retrained-v1-checkpoint"
     }
   ]

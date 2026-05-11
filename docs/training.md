@@ -41,6 +41,21 @@ For monitored long runs, U-Net is split into two Kaggle jobs:
 CPU inference is kept for user-facing portability, but the primary reported metrics are generated
 on GPU to keep evaluation turnaround short.
 
+## Historical MSO Preprocessing
+
+The original notebooks did not train on raw JSRT/BSE PNG values. Before training, they wrote a
+processed dataset with:
+
+```python
+img, target = cv2.imread(source_path), cv2.imread(target_path)
+img, target = histeq(255 - img), histeq(255 - target)
+```
+
+where `histeq` converts to grayscale, applies `cv2.equalizeHist`, and expands back to three
+channels. The current training code now reproduces that path for both model families before any
+model-specific resize, augmentation, or normalization. Earlier retrained-v1 checkpoints and visual
+panels created without this step are superseded and should be rerun on Kaggle.
+
 ## Local Commands
 
 Create the split:

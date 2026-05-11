@@ -48,8 +48,10 @@ bone-suppression \
   --device cpu
 ```
 
-The CLI reads the input image as RGB, runs the selected model, and writes the generated image to the
-requested output path. Use `--device cpu` for reproducible CPU-only validation and timing.
+The CLI reads the input image as RGB, applies the same notebook-compatible MSO preprocessing used
+for retraining (`255 - image` and histogram equalization), runs the selected model, and writes the
+generated image to the requested output path. FastAI U-Net outputs are decoded with the historical
+`y_range=(-3, 3)` scale. Use `--device cpu` for reproducible CPU-only validation and timing.
 
 ## Custom Registry Path
 

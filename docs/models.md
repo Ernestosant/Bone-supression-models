@@ -18,11 +18,11 @@ registry.
 - Architecture: Pix2Pix-style conditional GAN.
 - Retrained-v1 checkpoint: `gan_mso2_retrained_v1.keras`.
 - Device support: CPU and GPU.
-- Current status: trained and evaluated; public Drive upload pending.
+- Current status: superseded after preprocessing review; retrain required before publication.
 
-The inference routine applies histogram equalization, resizes large inputs to 256 x 256, normalizes
-to `[-1, 1]`, calls the generator with `training=True` for compatibility, and converts the output
-back to an 8-bit RGB image.
+The inference routine applies the historical MSO preprocessing (`255 - image` and histogram
+equalization), resizes large inputs to 256 x 256, normalizes to `[-1, 1]`, calls the generator with
+`training=True` for compatibility, and converts the output back to an 8-bit RGB image.
 
 ## `unet_resnet50`
 
@@ -30,7 +30,7 @@ back to an 8-bit RGB image.
 - Architecture: U-Net with a pretrained ResNet50 encoder.
 - Retrained-v1 checkpoint: `unet_resnet50_retrained_v1.pkl`.
 - Device support: CPU and GPU.
-- Current status: trained and evaluated; public Drive upload pending.
+- Current status: superseded after preprocessing review; retrain required before publication.
 
 The historical U-Net checkpoint URL returned 404 during review. The retrained-v1 checkpoint should
 be presented as a new reproducible artifact, not as a recovered historical weight.

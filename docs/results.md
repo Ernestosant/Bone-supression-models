@@ -4,6 +4,18 @@ Retrained-v1 training and metrics were generated on Kaggle Tesla P100. Primary q
 results use GPU-enabled `device=auto` evaluation for speed. CPU inference remains supported for
 end users, but CPU timing is not the primary results path.
 
+## Current Status
+
+The first retrained-v1 checkpoint pass is now marked **superseded**. Review of the historical
+`Unet_MSO.ipynb` and `pix2pix.ipynb` notebooks showed that the original experiments trained on
+OpenCV 8-bit images after `255 - image` and `cv2.equalizeHist`. The first pass used raw
+Pillow/FastAI loading for parts of training/evaluation, which is wrong for the 16-bit BSE targets
+and explains the poor visual outputs despite apparently strong numeric metrics.
+
+Do not cite the tables below as final research results. They remain here only as engineering
+provenance until both models are retrained and reevaluated with the restored notebook-compatible
+preprocessing path.
+
 ## Kaggle Run Log
 
 | Date | Kernel | Version | Status | Notes |
@@ -11,13 +23,18 @@ end users, but CPU timing is not the primary results path.
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-retrained-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-retrained-v1) | 1 | error | Failed before training because Kaggle did not include the local `src/` package. Superseded by embedded pilot/full kernels below. |
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-pilot-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-pilot-v1) | 1 | error | Failed before training because Kaggle did not include the local `src/` package. |
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-pilot-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-pilot-v1) | 2 | complete | GAN 1-epoch pilot completed on Tesla P100. Epoch time: 66.59 s; train time: 70.67 s; run time including CPU evaluation: 97.70 s. Estimated 50-epoch GAN training: about 56-60 min. |
-| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-full-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-full-v1) | 1 | complete | GAN 50-epoch run completed on Tesla P100. Train time: 2603.51 s; run time including CPU evaluation: 2629.45 s. Artifacts copied to `docs/results/retrained_v1/`. |
-| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-steps-eval-v2`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-steps-eval-v2) | 1 | complete | GAN CPU autoregressive evaluation for steps 0-5 completed, then superseded by GPU metrics below. |
-| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-steps-gpu-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-steps-gpu-v1) | 1 | complete | GAN GPU autoregressive evaluation for steps 0-5 completed. Run time: 105.36 s. Metrics copied to `docs/results/retrained_v1/gan_mso2_test_steps_metrics_gpu.json`. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-full-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-full-v1) | 1 | superseded | GAN 50-epoch run completed on Tesla P100, but later review found the preprocessing path did not match the historical notebooks. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-steps-eval-v2`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-steps-eval-v2) | 1 | superseded | GAN CPU autoregressive evaluation for steps 0-5 completed before the preprocessing mismatch was found. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-steps-gpu-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-steps-gpu-v1) | 1 | superseded | GAN GPU autoregressive evaluation for steps 0-5 completed before the preprocessing mismatch was found. |
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-u-net-pilot-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-u-net-pilot-v1) | 1 | error | Failed at first FastAI batch because Kaggle PyTorch `2.10.0+cu128` does not include kernels for Tesla P100 `sm_60`. |
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-u-net-pilot-fast-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-u-net-pilot-fast-v1) | 1 | complete | U-Net 1-epoch pilot completed after installing PyTorch CUDA 12.6. Train time: 79.04 s; run time after setup with limited CPU eval: 114.92 s. Estimated 50-epoch train time: about 66 min, excluding setup and full CPU step evaluation. |
-| 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-full-train-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-full-train-v1) | 1 | complete | U-Net 50-epoch train-only run completed. Train time: 2388.81 s. Checkpoint SHA256: `0a4be7cea81f7c8013b46ad276e8dd92b5bbd8e9689754faddd293621b044b3a`. |
-| 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-steps-gpu-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-steps-gpu-v1) | 1 | complete | U-Net GPU autoregressive evaluation for steps 0-5 completed. Run time: 310.23 s. Metrics copied to `docs/results/retrained_v1/unet_resnet50_test_steps_metrics_gpu.json`. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-full-train-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-full-train-v1) | 1 | superseded | U-Net 50-epoch train-only run completed, but later review found the preprocessing path did not match the historical notebooks. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-steps-gpu-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-steps-gpu-v1) | 1 | superseded | U-Net GPU autoregressive evaluation for steps 0-5 completed, but later review found the preprocessing path did not match the historical notebooks. |
+
+## Superseded Metrics
+
+These values were computed before restoring notebook-compatible preprocessing. They are retained to
+explain the failed visual QA pass, not as final model evidence.
 
 | Model | Selected step | MAE | RMSE | PSNR | SSIM | GPU sec/image | SHA256 |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
