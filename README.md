@@ -8,6 +8,20 @@ Retrained-v1 visual examples are stored in `docs/assets/examples/retrained_v1/` 
 from the deterministic test split. The historical static visual remains in the repository for
 provenance only and is no longer presented as benchmark evidence.
 
+## Visual First Look
+
+These deterministic test-split panels show the current `unet_resnet50` retrained-v1 checkpoint at
+autoregressive step `1`. They are displayed in traditional X-ray polarity, with a black background
+and brighter dense anatomy. The panel display uses windowing, inversion, and a light output gamma
+curve for visualization only; metric calculations should be rerun after the 16-bit normalization
+path is fully rechecked.
+
+![JPCNN072 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCNN072_unet_resnet50_step1_input_output.png)
+
+![JPCNN028 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCNN028_unet_resnet50_step1_input_output.png)
+
+![JPCLN003 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCLN003_unet_resnet50_step1_input_output.png)
+
 ## Why Bone Suppression?
 
 Ribs and clavicles can obscure lung findings in frontal chest radiographs. Bone suppression models
@@ -114,21 +128,6 @@ documented `0,1,2,3,4,5` autoregressive sweep.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `gan_mso2` retrained v1 | 1 | 0.011330 | 0.046331 | 27.456801 | 0.749001 | 0.108497 |
 | `unet_resnet50` retrained v1 | 1 | 0.003033 | 0.034316 | 36.057932 | 0.874740 | 0.635685 |
-
-## Best Model Examples
-
-The best quantitative retrained-v1 checkpoint is `unet_resnet50` at autoregressive step `1`.
-The examples below come from the deterministic test split and show the input X-ray, the one-step
-model output, and the paired BSE target used for evaluation.
-These README panels are display-windowed because the BSE targets are 16-bit PNGs; the display
-windowing is only for visualization. They should be treated as visual QA panels, not final
-publication figures, until the 16-bit target normalization path is rechecked end to end.
-
-![JPCLN003 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCLN003_unet_resnet50_step1_input_output.png)
-
-![JPCNN028 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCNN028_unet_resnet50_step1_input_output.png)
-
-![JPCNN072 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCNN072_unet_resnet50_step1_input_output.png)
 
 See [docs/training.md](docs/training.md), [docs/evaluation.md](docs/evaluation.md),
 [docs/results.md](docs/results.md), and [docs/provenance.md](docs/provenance.md).

@@ -84,7 +84,7 @@ def normalize_to_minus_one_one(image: ArrayLikeImage) -> np.ndarray:
 
 
 def output_to_uint8_image(output: ArrayLikeImage) -> np.ndarray:
-    """Convert model output in [0, 1] or [-1, 1] into uint8 RGB."""
+    """Convert model output into uint8 RGB without saturating common ranges."""
     array = np.asarray(output)
     if array.ndim == 3 and array.shape[0] in {1, 3} and array.shape[-1] not in {1, 3, 4}:
         array = np.transpose(array, (1, 2, 0))
@@ -94,9 +94,34 @@ def output_to_uint8_image(output: ArrayLikeImage) -> np.ndarray:
         array = np.repeat(array, 3, axis=-1)
 
     array = np.nan_to_num(array.astype(np.float32), nan=0.0, posinf=1.0, neginf=-1.0)
-    if array.size and array.min() < 0.0:
+    if not array.size:
+        return ensure_rgb(array)
+
+    array_min = float(array.min())
+    array_max = float(array.max())
+    if array_min >= -1.0 and array_max <= 1.0 and array_min < 0.0:
         array = array * 0.5 + 0.5
-    return ensure_rgb(np.clip(array, 0.0, 1.0))
+        return ensure_rgb(np.clip(array, 0.0, 1.0))
+    if array_min >= 0.0 and array_max <= 1.0:
+        return ensure_rgb(np.clip(array, 0.0, 1.0))
+    if array_min >= 0.0 and array_max <= 255.0:
+        return ensure_rgb(array)
+
+    return ensure_rgb(_window_to_uint8(array))
+
+
+def _window_to_uint8(array: np.ndarray) -> np.ndarray:
+    finite = array[np.isfinite(array)]
+    if finite.size == 0:
+        return np.zeros(array.shape, dtype=np.uint8)
+    low, high = np.percentile(finite, [0.5, 99.5])
+    if not np.isfinite(low) or not np.isfinite(high) or high <= low:
+        low = float(finite.min())
+        high = float(finite.max())
+    if high <= low:
+        return np.zeros(array.shape, dtype=np.uint8)
+    scaled = (array - low) / (high - low)
+    return np.clip(np.round(scaled * 255.0), 0, 255).astype(np.uint8)
 
 
 def _equalize_histogram(gray: np.ndarray) -> np.ndarray:
