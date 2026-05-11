@@ -52,6 +52,15 @@ bone-suppression \
 The CLI reads the input image as RGB, runs the selected model, and writes the generated image to the
 requested output path.
 
+## Custom Registry Path
+
+By default, the package reads `configs/model_registry.json` in an editable checkout and falls back
+to the packaged registry resource after normal installation. To test a custom registry, set:
+
+```bash
+BONE_SUPPRESSION_MODEL_REGISTRY=path/to/model_registry.json
+```
+
 ## Troubleshooting
 
 - `Checkpoint not found`: verify the local path and keep weights outside Git.

@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from bone_suppression.inference import run_inference
-from bone_suppression.registry import load_model_registry
+from bone_suppression.registry import ModelSpec, load_model_registry
 
 
 def predict_from_ui(
@@ -36,7 +36,8 @@ def create_demo():
         raise RuntimeError("Install Gradio to run the demo application.") from exc
 
     registry = load_model_registry()
-    choices = [(spec.display_name, spec.key) for spec in registry.values()]
+    choices = available_model_choices(registry)
+    default_model = choices[0][1] if choices else None
 
     with gr.Blocks(title="Bone Suppression Models") as demo:
         gr.Markdown("# Bone Suppression Models")
@@ -49,7 +50,7 @@ def create_demo():
                 image = gr.Image(label="Input chest X-ray", type="numpy")
                 model_key = gr.Dropdown(
                     choices=choices,
-                    value="gan_mso2",
+                    value=default_model,
                     label="Model",
                 )
                 checkpoint_path = gr.Textbox(
@@ -77,3 +78,8 @@ def create_demo():
 
 def main() -> None:
     create_demo().launch()
+
+
+def available_model_choices(registry: dict[str, ModelSpec]) -> list[tuple[str, str]]:
+    """Return UI choices for models with usable checkpoints."""
+    return [(spec.display_name, spec.key) for spec in registry.values() if spec.available]

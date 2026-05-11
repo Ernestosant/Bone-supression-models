@@ -1,0 +1,39 @@
+{
+  "models": [
+    {
+      "key": "unet_resnet50",
+      "display_name": "U-Net ResNet50",
+      "framework": "fastai",
+      "architecture": "U-Net with a pretrained ResNet50 encoder and a single-channel attention component",
+      "status": "pending_weights",
+      "available": false,
+      "checkpoint_url": "https://drive.google.com/file/d/1lCV9NnOmVwMgTl0neFzW8ofMU9BnPaXS/view?usp=sharing",
+      "checkpoint_filename": "unet_resnet50.pkl",
+      "default_steps": 2,
+      "preprocessing": [
+        "RGB conversion",
+        "histogram equalization",
+        "temporary TIFF handoff for FastAI test_dl"
+      ],
+      "notes": "The original public checkpoint URL currently returns HTTP 404. Keep this model documented, but do not claim reproducible inference until a valid checkpoint is restored."
+    },
+    {
+      "key": "gan_mso2",
+      "display_name": "Pix2Pix GAN MSO2",
+      "framework": "tensorflow",
+      "architecture": "Pix2Pix-style conditional GAN for chest X-ray bone suppression",
+      "status": "checkpoint_link_available",
+      "available": true,
+      "checkpoint_url": "https://drive.google.com/file/d/1Q4MxwYsNnUwFBQfmdRM7agJ4Xj-10Ra9/view?usp=sharing",
+      "checkpoint_filename": "gan_mso2.h5",
+      "default_steps": 2,
+      "preprocessing": [
+        "RGB conversion",
+        "histogram equalization",
+        "resize to 256x256 when larger",
+        "normalization to [-1, 1]"
+      ],
+      "notes": "The Google Drive link opens as of the repository refactor. Validate the downloaded file before publishing quantitative claims."
+    }
+  ]
+}
