@@ -120,6 +120,9 @@ documented `0,1,2,3,4,5` autoregressive sweep.
 The best quantitative retrained-v1 checkpoint is `unet_resnet50` at autoregressive step `1`.
 The examples below come from the deterministic test split and show the input X-ray, the one-step
 model output, and the paired BSE target used for evaluation.
+These README panels are display-windowed because the BSE targets are 16-bit PNGs; the display
+windowing is only for visualization. They should be treated as visual QA panels, not final
+publication figures, until the 16-bit target normalization path is rechecked end to end.
 
 ![JPCLN003 input, U-Net ResNet50 step 1 output, and target](docs/assets/examples/retrained_v1/JPCLN003_unet_resnet50_step1_input_output.png)
 
