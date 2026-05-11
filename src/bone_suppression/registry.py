@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from importlib import resources
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 from bone_suppression.preprocessing import require_keys
 
@@ -23,8 +24,13 @@ REQUIRED_MODEL_FIELDS = {
     "available",
     "checkpoint_url",
     "checkpoint_filename",
+    "checkpoint_sha256",
     "default_steps",
+    "device_support",
+    "examples",
+    "metrics",
     "preprocessing",
+    "training_artifacts_url",
     "notes",
 }
 
@@ -39,8 +45,13 @@ class ModelSpec:
     available: bool
     checkpoint_url: str
     checkpoint_filename: str
+    checkpoint_sha256: str
     default_steps: int
+    device_support: tuple[str, ...]
+    examples: tuple[str, ...]
+    metrics: dict[str, Any]
     preprocessing: tuple[str, ...]
+    training_artifacts_url: str
     notes: str
 
     @classmethod
@@ -55,8 +66,13 @@ class ModelSpec:
             available=bool(payload["available"]),
             checkpoint_url=str(payload["checkpoint_url"]),
             checkpoint_filename=str(payload["checkpoint_filename"]),
+            checkpoint_sha256=str(payload["checkpoint_sha256"]),
             default_steps=int(payload["default_steps"]),
+            device_support=tuple(str(item) for item in payload["device_support"]),
+            examples=tuple(str(item) for item in payload["examples"]),
+            metrics=dict(payload["metrics"]),
             preprocessing=tuple(str(item) for item in payload["preprocessing"]),
+            training_artifacts_url=str(payload["training_artifacts_url"]),
             notes=str(payload["notes"]),
         )
 
@@ -105,6 +121,18 @@ def available_model_keys(path: str | Path | None = None) -> list[str]:
     return [key for key, spec in load_model_registry(path).items() if spec.available]
 
 
+def direct_checkpoint_url(url: str) -> str:
+    """Normalize Google Drive share URLs to direct download URLs when possible."""
+    parsed = urlparse(url)
+    if parsed.netloc not in {"drive.google.com", "www.drive.google.com"}:
+        return url
+
+    file_id = _google_drive_file_id(parsed.path, parsed.query)
+    if file_id is None:
+        return url
+    return f"https://drive.google.com/uc?export=download&id={file_id}"
+
+
 def _load_registry_payload(path: str | Path | None = None) -> dict[str, Any]:
     if path is not None:
         return _load_registry_file(Path(path))
@@ -129,3 +157,16 @@ def _load_registry_file(path: Path) -> dict[str, Any]:
 
 def _checkout_registry_path() -> Path:
     return Path(__file__).resolve().parents[2] / "configs" / "model_registry.json"
+
+
+def _google_drive_file_id(path: str, query: str) -> str | None:
+    query_id = parse_qs(query).get("id")
+    if query_id:
+        return query_id[0]
+
+    marker = "/file/d/"
+    if marker not in path:
+        return None
+    remainder = path.split(marker, maxsplit=1)[1]
+    file_id = remainder.split("/", maxsplit=1)[0]
+    return file_id or None

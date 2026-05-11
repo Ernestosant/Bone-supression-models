@@ -12,6 +12,7 @@ from bone_suppression.preprocessing import (
     ensure_rgb,
     histogram_equalize_rgb,
     normalize_to_minus_one_one,
+    output_to_uint8_image,
     resize_if_larger,
     to_uint8,
     validate_steps,
@@ -29,10 +30,11 @@ def run_inference(
     checkpoint_path: str | Path,
     image: np.ndarray,
     steps: int | None = None,
+    device: str = "auto",
 ) -> np.ndarray:
     """Load a checkpoint and run inference on a single image."""
     spec = get_model_spec(model_key)
-    model = load_model(spec, checkpoint_path)
+    model = load_model(spec, checkpoint_path, device=device)
     return predict_model(model, spec, image, steps=steps)
 
 
@@ -98,8 +100,7 @@ def _predict_unet_once(model, image: np.ndarray) -> np.ndarray:
         if raw.ndim == 3 and raw.shape[0] in {1, 3}:
             raw = np.transpose(raw, (1, 2, 0))
 
-        scaled = ((raw.astype(np.float32) + 3.0) / 6.0) * 255.0
-        return ensure_rgb(scaled)
+        return output_to_uint8_image(raw)
     finally:
         if tmp_path is not None:
             tmp_path.unlink(missing_ok=True)

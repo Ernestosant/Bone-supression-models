@@ -6,14 +6,16 @@ from pathlib import Path
 import pytest
 
 from bone_suppression import registry as registry_module
-from bone_suppression.registry import get_model_spec, load_model_registry
+from bone_suppression.registry import direct_checkpoint_url, get_model_spec, load_model_registry
 
 
 def test_load_default_registry_contains_expected_models() -> None:
     registry = load_model_registry()
 
     assert set(registry) == {"gan_mso2", "unet_resnet50"}
-    assert registry["gan_mso2"].available is True
+    assert registry["gan_mso2"].checkpoint_filename == "gan_mso2_retrained_v1.keras"
+    assert registry["gan_mso2"].device_support == ("cpu", "gpu")
+    assert registry["gan_mso2"].available is False
     assert registry["unet_resnet50"].available is False
 
 
@@ -45,8 +47,13 @@ def test_registry_can_load_from_environment_override(tmp_path, monkeypatch) -> N
                         "available": True,
                         "checkpoint_url": "https://example.com/model.h5",
                         "checkpoint_filename": "model.h5",
+                        "checkpoint_sha256": "abc123",
                         "default_steps": 1,
+                        "device_support": ["cpu"],
+                        "examples": [],
+                        "metrics": {},
                         "preprocessing": ["RGB conversion"],
+                        "training_artifacts_url": "https://example.com/artifacts",
                         "notes": "Test registry.",
                     }
                 ]
@@ -68,3 +75,11 @@ def test_registry_can_load_packaged_resource(monkeypatch) -> None:
     registry = load_model_registry()
 
     assert set(registry) == {"gan_mso2", "unet_resnet50"}
+
+
+def test_direct_checkpoint_url_normalizes_google_drive_share_link() -> None:
+    url = "https://drive.google.com/file/d/abc123/view?usp=sharing"
+
+    direct = direct_checkpoint_url(url)
+
+    assert direct == "https://drive.google.com/uc?export=download&id=abc123"

@@ -1,0 +1,22 @@
+{
+  "batch_size": 4,
+  "epochs": 50,
+  "image_size": 256,
+  "limit": null,
+  "metrics": {
+    "gan_mso2": {
+      "aggregate": {
+        "cpu_seconds_per_image": 0.32839095697293463,
+        "mae": 0.3561730650631157,
+        "psnr": 7.507776001838181,
+        "rmse": 0.42218568313189864,
+        "ssim": -0.05168681281819864
+      },
+      "train_seconds": 2603.508619125
+    }
+  },
+  "models": [
+    "gan_mso2"
+  ],
+  "run_seconds": 2629.453930507
+}

@@ -1,0 +1,17 @@
+{
+  "batch_size": 4,
+  "epochs": 50,
+  "eval_limit": null,
+  "image_size": 256,
+  "limit": null,
+  "metrics": {
+    "unet_resnet50": {
+      "steps": {},
+      "train_seconds": 2388.8120577209997
+    }
+  },
+  "models": [
+    "unet_resnet50"
+  ],
+  "run_seconds": 2398.002135606
+}

@@ -16,8 +16,22 @@ generated with dual-energy subtraction.
 
 - Image pairs are reported as 1024 x 1024 pixels in the original README.
 - The source dataset includes a larger augmented set and a smaller non-augmented set.
-- The repository does not currently include the original training notebooks or a reproducible
-  training pipeline.
+- The retrained-v1 pipeline uses paired non-augmented `JSRT/JSRT` and `BSE_JSRT/BSE_JSRT` images.
+- The Kaggle `augmented/` directory is excluded from primary metrics to avoid leakage.
+
+## Deterministic Split
+
+Create the canonical split with:
+
+```bash
+bone-suppression-repro prepare-splits \
+  --dataset-root data/raw/xray-bone-shadow-supression \
+  --output training_runs/retrained_v1/splits.json \
+  --seed 2026
+```
+
+The default split is 70% train, 15% validation, and 15% test after sorting paired filenames and
+shuffling with seed `2026`.
 
 ## Preprocessing Assumptions
 

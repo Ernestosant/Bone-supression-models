@@ -36,6 +36,7 @@ unet = [
 
 [project.scripts]
 bone-suppression = "bone_suppression.cli:main"
+bone-suppression-repro = "bone_suppression.repro_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -50,6 +51,7 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py39"
+extend-exclude = ["notebooks/*.ipynb"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

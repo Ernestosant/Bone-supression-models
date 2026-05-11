@@ -7,18 +7,23 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-Install model-specific requirements only when running real checkpoint inference. The unit tests use
-mocked models and do not require TensorFlow or FastAI checkpoints.
+Install model-specific requirements only when running real checkpoint inference or retraining. The
+unit tests use mocked models and do not require TensorFlow or FastAI checkpoints.
 
 ## Code Organization
 
 - `src/bone_suppression/preprocessing.py`: image shape, dtype, histogram, resize, and normalization
   helpers.
+- `src/bone_suppression/dataset.py`: Kaggle pair discovery and deterministic splits.
+- `src/bone_suppression/metrics.py`: MAE, RMSE, PSNR, SSIM, and aggregation helpers.
+- `src/bone_suppression/evaluation.py`: GPU/CPU evaluation and comparison panel generation.
+- `src/bone_suppression/training.py`: TensorFlow GAN and FastAI U-Net retraining routines.
 - `src/bone_suppression/registry.py`: model registry loader and validation.
 - `src/bone_suppression/model_io.py`: optional framework checkpoint loading.
 - `src/bone_suppression/inference.py`: reusable prediction routines.
 - `src/bone_suppression/gradio_app.py`: interactive UI wrapper.
 - `src/bone_suppression/cli.py`: command line entrypoint.
+- `src/bone_suppression/repro_cli.py`: reproducibility CLI for training and evaluation.
 
 ## Quality Checks
 
@@ -34,8 +39,9 @@ The GitHub Actions workflow runs the same checks on pushes and pull requests.
 1. Add a new entry to `configs/model_registry.json`.
 2. Implement or extend the appropriate inference routine.
 3. Add tests that use a mocked model object.
-4. Document checkpoint requirements and limitations in `docs/models.md`.
-5. Keep checkpoint files outside Git.
+4. Add or update training/evaluation commands when the model participates in reproducible results.
+5. Document checkpoint requirements and limitations in `docs/models.md`.
+6. Keep checkpoint files outside Git.
 
 ## Documentation Updates
 
