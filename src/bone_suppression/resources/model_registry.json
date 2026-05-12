@@ -19,12 +19,6 @@
       ],
       "release_checksums_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/SHA256SUMS.txt",
       "release_artifacts_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/corrected_mso_metrics_manifests_panels.zip",
-      "artifact_paths": {
-        "manifest": "docs/results/retrained_v1/unet_resnet50_corrected_mso_manifest.json",
-        "metrics": "docs/results/retrained_v1/unet_resnet50_corrected_mso_metrics.json",
-        "step_metrics": "docs/results/retrained_v1/unet_resnet50_corrected_mso_test_steps_metrics_gpu.json",
-        "run_summary": "docs/results/retrained_v1/unet_resnet50_corrected_mso_run_summary.json"
-      },
       "default_steps": 1,
       "device_support": [
         "cpu",
@@ -114,12 +108,6 @@
       "release_url": "https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1",
       "release_checksums_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/SHA256SUMS.txt",
       "release_artifacts_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/corrected_mso_metrics_manifests_panels.zip",
-      "artifact_paths": {
-        "manifest": "docs/results/retrained_v1/gan_mso2_corrected_mso_manifest.json",
-        "metrics": "docs/results/retrained_v1/gan_mso2_corrected_mso_metrics.json",
-        "step_metrics": "docs/results/retrained_v1/gan_mso2_corrected_mso_test_steps_metrics_gpu.json",
-        "run_summary": "docs/results/retrained_v1/gan_mso2_corrected_mso_run_summary.json"
-      },
       "default_steps": 1,
       "device_support": [
         "cpu",

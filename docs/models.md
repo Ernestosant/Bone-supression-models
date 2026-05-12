@@ -5,9 +5,9 @@ Model metadata is centralized in `configs/model_registry.json` and packaged in
 
 ## Registry Fields
 
-Each model entry records framework, architecture, availability, checkpoint filename, checkpoint
-policy, SHA256, device support, example panels, metrics, preprocessing, artifact paths, and training
-artifact URL.
+Each canonical checkout registry entry records framework, architecture, availability, checkpoint
+filename, checkpoint policy, SHA256, device support, example panels, metrics, preprocessing,
+repo-local artifact paths, and training artifact URL.
 
 `available` is `true` for the corrected MSO release because public checkpoint assets are available
 and their SHA256 values are recorded in the registry. Large weights remain outside Git history.
@@ -48,6 +48,10 @@ Current retrained-v1 checkpoints are published in the
 GitHub Release. The GAN is a single `.keras` asset. The corrected U-Net `.pkl` is larger, so it is
 published as `part01`, `part02`, and `part03`; concatenate the parts in order and verify the
 reconstructed file against the registry SHA256.
+
+The packaged registry in `src/bone_suppression/resources/model_registry.json` avoids checkout-only
+`docs/results/...` references. Installed-package users should use `release_artifacts_url` for the
+public metrics, manifests, run summaries, checksums, and panels bundle.
 
 Every published retrained-v1 checkpoint has:
 
