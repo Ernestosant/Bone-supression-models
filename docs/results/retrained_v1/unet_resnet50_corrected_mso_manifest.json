@@ -1,0 +1,39 @@
+{
+  "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
+  "checkpoint_sha256": "2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b",
+  "created_at_utc": "2026-05-12T00:51:32.084602+00:00",
+  "dataset_slug": "hmchuong/xray-bone-shadow-supression",
+  "git_commit": null,
+  "hyperparameters": {
+    "batch_size": 4,
+    "dataset_root": "/kaggle/input/datasets/hmchuong/xray-bone-shadow-supression",
+    "epochs": 50,
+    "fastai_normalization": "imagenet_stats",
+    "fastai_resize_method": "crop",
+    "historical_reference": "Unet_MSO.ipynb preprocessing",
+    "image_size": 256,
+    "learning_rate": 0.0002,
+    "limit": null,
+    "model_key": "unet_resnet50",
+    "output_dir": "/kaggle/working/training_runs/unet_mso_corrected_v3/unet_resnet50",
+    "p100_note": "self_attention defaults to false because FastAI spectral norm self-attention failed on Kaggle Tesla P100 with CUBLAS_STATUS_NOT_SUPPORTED",
+    "preprocessing": "OpenCV 8-bit read, intensity inversion with 255-image, grayscale histogram equalization, and RGB expansion",
+    "pretrained": true,
+    "seed": 2026,
+    "self_attention": false,
+    "splits_path": "/kaggle/working/training_runs/unet_mso_corrected_v3/splits.json",
+    "weight_decay": 0.001,
+    "y_range": [
+      -3.0,
+      3.0
+    ]
+  },
+  "metrics_path": null,
+  "model_key": "unet_resnet50",
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "python": "3.12.12",
+  "schema_version": 1,
+  "seed": 2026,
+  "split_path": "/kaggle/working/training_runs/unet_mso_corrected_v3/splits.json",
+  "training_environment": "kaggle-p100"
+}

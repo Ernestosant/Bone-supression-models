@@ -33,4 +33,5 @@ the retrained-v1 artifacts from the public Kaggle dataset.
 Historical local notebooks reviewed on 2026-05-11 (`Unet_MSO.ipynb` and `pix2pix.ipynb`) showed
 that the original experiments first converted raw JSRT/BSE files through OpenCV 8-bit loading,
 `255 - image`, and `cv2.equalizeHist`. Earlier retrained-v1 artifacts created without that exact
-path are superseded and remain only as provenance for the failed visual QA pass.
+path are superseded and remain only as provenance for the failed visual QA pass. The corrected MSO
+Kaggle runs now provide the current retrained checkpoints and metrics.

@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import random
+import tempfile
 import time
 from dataclasses import asdict, dataclass
+from os import getenv
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +18,6 @@ from bone_suppression.dataset import DATASET_SLUG, DEFAULT_SEED, ImagePair, load
 from bone_suppression.preprocessing import (
     LEGACY_MSO_PREPROCESSING,
     read_legacy_mso_image,
-    save_legacy_mso_image,
 )
 
 
@@ -177,9 +178,9 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
     splits = load_splits(config.splits_path, config.dataset_root)
     train_pairs = _limit_pairs(splits["train"], config.limit)
     valid_pairs = _limit_pairs(splits["validation"], config.limit)
-    cache_root = config.output_dir / "legacy_mso_preprocessed"
-    train_pairs = _prepare_legacy_mso_cache(train_pairs, cache_root)
-    valid_pairs = _prepare_legacy_mso_cache(valid_pairs, cache_root)
+    cache_root = _legacy_cache_root(config)
+    train_pairs = _prepare_legacy_mso_cache(train_pairs, cache_root, config.image_size)
+    valid_pairs = _prepare_legacy_mso_cache(valid_pairs, cache_root, config.image_size)
     all_pairs = train_pairs + valid_pairs
     valid_indices = list(range(len(train_pairs), len(all_pairs)))
 
@@ -198,13 +199,14 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
     dls.c = 3
     weight_decay = 1e-3
     y_range = (-3.0, 3.0)
+    self_attention = _env_flag("BONE_SUPPRESSION_UNET_SELF_ATTENTION", default=False)
     learner = unet_learner(
         dls,
         resnet50,
         n_out=3,
         pretrained=config.pretrained,
         norm_type=NormType.Weight,
-        self_attention=True,
+        self_attention=self_attention,
         y_range=y_range,
         loss_func=MSELossFlat(),
     )
@@ -229,9 +231,14 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
             "preprocessing": LEGACY_MSO_PREPROCESSING,
             "weight_decay": weight_decay,
             "y_range": list(y_range),
+            "self_attention": self_attention,
             "fastai_resize_method": "crop",
             "fastai_normalization": "imagenet_stats",
-            "historical_reference": "Unet_MSO.ipynb preprocessing and learner options",
+            "historical_reference": "Unet_MSO.ipynb preprocessing",
+            "p100_note": (
+                "self_attention defaults to false because FastAI spectral norm self-attention "
+                "failed on Kaggle Tesla P100 with CUBLAS_STATUS_NOT_SUPPORTED"
+            ),
         },
     )
     write_json(config.output_dir / "unet_resnet50_manifest.json", manifest)
@@ -277,15 +284,36 @@ def _load_normalized_image(path: Path, image_size: int) -> np.ndarray:
     return array / 127.5 - 1.0
 
 
-def _prepare_legacy_mso_cache(pairs: list[ImagePair], cache_root: Path) -> list[ImagePair]:
+def _legacy_cache_root(config: TrainConfig) -> Path:
+    configured = getenv("BONE_SUPPRESSION_PREPROCESSED_CACHE_DIR")
+    if configured:
+        return Path(configured)
+    return (
+        Path(tempfile.gettempdir())
+        / "bone_suppression_legacy_mso"
+        / config.model_key
+        / f"seed_{config.seed}_size_{config.image_size}"
+    )
+
+
+def _prepare_legacy_mso_cache(
+    pairs: list[ImagePair],
+    cache_root: Path,
+    image_size: int,
+) -> list[ImagePair]:
     cached_pairs: list[ImagePair] = []
     for pair in pairs:
         input_path = cache_root / "source" / f"{pair.id}.png"
         target_path = cache_root / "target" / f"{pair.id}.png"
         if not input_path.exists():
-            save_legacy_mso_image(pair.input_path, input_path)
+            input_path.parent.mkdir(parents=True, exist_ok=True)
+            Image.fromarray(_resize_uint8(read_legacy_mso_image(pair.input_path), image_size)).save(
+                input_path
+            )
         if not target_path.exists():
-            save_legacy_mso_image(pair.target_path, target_path)
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target = _resize_uint8(read_legacy_mso_image(pair.target_path), image_size)
+            Image.fromarray(target).save(target_path)
         cached_pairs.append(ImagePair(pair.id, input_path, target_path))
     return cached_pairs
 
@@ -297,6 +325,13 @@ def _resize_uint8(image: np.ndarray, image_size: int) -> np.ndarray:
         resized = Image.fromarray(image).resize((image_size, image_size), Image.BILINEAR)
         return np.asarray(resized.convert("RGB"))
     return cv2.resize(image, (image_size, image_size), interpolation=cv2.INTER_LINEAR)
+
+
+def _env_flag(name: str, default: bool) -> bool:
+    value = getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _tf_pair_dataset(

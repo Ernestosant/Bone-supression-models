@@ -18,7 +18,7 @@ registry.
 - Architecture: Pix2Pix-style conditional GAN.
 - Retrained-v1 checkpoint: `gan_mso2_retrained_v1.keras`.
 - Device support: CPU and GPU.
-- Current status: superseded after preprocessing review; retrain required before publication.
+- Current status: corrected MSO retrain complete; public Drive upload pending.
 
 The inference routine applies the historical MSO preprocessing (`255 - image` and histogram
 equalization), resizes large inputs to 256 x 256, normalizes to `[-1, 1]`, calls the generator with
@@ -30,10 +30,12 @@ equalization), resizes large inputs to 256 x 256, normalizes to `[-1, 1]`, calls
 - Architecture: U-Net with a pretrained ResNet50 encoder.
 - Retrained-v1 checkpoint: `unet_resnet50_retrained_v1.pkl`.
 - Device support: CPU and GPU.
-- Current status: superseded after preprocessing review; retrain required before publication.
+- Current status: corrected MSO retrain complete; public Drive upload pending.
 
 The historical U-Net checkpoint URL returned 404 during review. The retrained-v1 checkpoint should
 be presented as a new reproducible artifact, not as a recovered historical weight.
+The Kaggle P100 run disables FastAI self-attention because spectral-normalized self-attention failed
+on that GPU with `CUBLAS_STATUS_NOT_SUPPORTED`.
 
 ## Checkpoint Policy
 

@@ -44,7 +44,7 @@ bone-suppression \
   --checkpoint models/checkpoints/gan_mso2_retrained_v1.keras \
   --input path/to/chest-xray.png \
   --output outputs/bone-suppressed.png \
-  --steps 2 \
+  --steps 1 \
   --device cpu
 ```
 

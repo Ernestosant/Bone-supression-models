@@ -6,15 +6,13 @@ end users, but CPU timing is not the primary results path.
 
 ## Current Status
 
-The first retrained-v1 checkpoint pass is now marked **superseded**. Review of the historical
-`Unet_MSO.ipynb` and `pix2pix.ipynb` notebooks showed that the original experiments trained on
-OpenCV 8-bit images after `255 - image` and `cv2.equalizeHist`. The first pass used raw
-Pillow/FastAI loading for parts of training/evaluation, which is wrong for the 16-bit BSE targets
-and explains the poor visual outputs despite apparently strong numeric metrics.
+Corrected MSO retraining has now completed for both model families. The current citable metrics use
+the historical notebook preprocessing path: OpenCV 8-bit read, `255 - image`,
+`cv2.equalizeHist`, and RGB expansion. The earlier retrained-v1 pass remains documented below as
+superseded engineering provenance because it did not match that preprocessing path.
 
-Do not cite the tables below as final research results. They remain here only as engineering
-provenance until both models are retrained and reevaluated with the restored notebook-compatible
-preprocessing path.
+Step `0` is a no-model baseline. It is useful for context, but model selection should use steps
+`1..5`, where an actual checkpoint is run autoregressively.
 
 ## Kaggle Run Log
 
@@ -30,6 +28,42 @@ preprocessing path.
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-u-net-pilot-fast-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-u-net-pilot-fast-v1) | 1 | complete | U-Net 1-epoch pilot completed after installing PyTorch CUDA 12.6. Train time: 79.04 s; run time after setup with limited CPU eval: 114.92 s. Estimated 50-epoch train time: about 66 min, excluding setup and full CPU step evaluation. |
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-full-train-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-full-train-v1) | 1 | superseded | U-Net 50-epoch train-only run completed, but later review found the preprocessing path did not match the historical notebooks. |
 | 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-steps-gpu-v1`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-steps-gpu-v1) | 1 | superseded | U-Net GPU autoregressive evaluation for steps 0-5 completed, but later review found the preprocessing path did not match the historical notebooks. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-gan-mso-corrected-v2`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-mso-corrected-v2) | 1 | complete | GAN 50-epoch corrected MSO run completed. Train time: 2613.72 s; run time: 2729.91 s. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-mso-corrected-v2`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-mso-corrected-v2) | 1 | error | U-Net failed in epoch 1 on Kaggle P100 inside FastAI self-attention/spectral norm with `CUBLAS_STATUS_NOT_SUPPORTED`; rerun disables self-attention for P100 compatibility. |
+| 2026-05-11 | [`ernestosantiesteban/bone-suppression-unet-mso-corrected-v3`](https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-mso-corrected-v3) | 1 | complete | U-Net 50-epoch corrected MSO run completed with self-attention disabled for P100 compatibility. Train time: 2270.66 s; run time: 2592.20 s. |
+
+## Corrected MSO Metrics
+
+These are the current retrained-v1 results. The selected rows are the best measured inference step
+for each model among steps `1..5`; step `0` is excluded from selection because it does not run a
+model.
+
+| Model | Selected step | MAE | RMSE | PSNR | SSIM | GPU sec/image | SHA256 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Pix2Pix GAN MSO2 corrected | 1 | 0.020027 | 0.042244 | 27.802648 | 0.989218 | 0.097549 | `09525519d3c51d6c7fd0377634bdff4f39ddf314180ea94b9d56fdcd49829dc1` |
+| U-Net ResNet50 corrected | 1 | 0.076602 | 0.092698 | 20.675888 | 0.950540 | 0.737866 | `2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b` |
+
+### Pix2Pix GAN MSO2 Corrected
+
+| Steps | MAE | RMSE | PSNR | SSIM | GPU sec/image |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 0.018665 | 0.036400 | 29.562923 | 0.991440 | 0.054963 |
+| 1 | 0.020027 | 0.042244 | 27.802648 | 0.989218 | 0.097549 |
+| 2 | 0.024498 | 0.047357 | 26.740057 | 0.986480 | 0.161409 |
+| 3 | 0.029965 | 0.054304 | 25.496492 | 0.982401 | 0.233899 |
+| 4 | 0.035239 | 0.061502 | 24.378221 | 0.977592 | 0.317723 |
+| 5 | 0.040321 | 0.068837 | 23.372787 | 0.972074 | 0.394302 |
+
+### U-Net ResNet50 Corrected
+
+| Steps | MAE | RMSE | PSNR | SSIM | GPU sec/image |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 0 | 0.018665 | 0.036400 | 29.562923 | 0.991440 | 0.056046 |
+| 1 | 0.076602 | 0.092698 | 20.675888 | 0.950540 | 0.737866 |
+| 2 | 0.082528 | 0.098987 | 20.096765 | 0.942528 | 1.014697 |
+| 3 | 0.084564 | 0.100788 | 19.939899 | 0.940305 | 1.286333 |
+| 4 | 0.086183 | 0.102270 | 19.813140 | 0.938321 | 1.583577 |
+| 5 | 0.087519 | 0.103564 | 19.703887 | 0.936539 | 1.835310 |
 
 ## Superseded Metrics
 
@@ -41,12 +75,10 @@ explain the failed visual QA pass, not as final model evidence.
 | Pix2Pix GAN MSO2 Retrained v1 | 1 | 0.011330 | 0.046331 | 27.456801 | 0.749001 | 0.108497 | `e6d72033d643f378fcd7722d630abf935d590831da5911c8a0f0deaa31f375bd` |
 | U-Net ResNet50 Retrained v1 | 1 | 0.003033 | 0.034316 | 36.057932 | 0.874740 | 0.635685 | `0a4be7cea81f7c8013b46ad276e8dd92b5bbd8e9689754faddd293621b044b3a` |
 
-## Autoregressive Step Metrics
+## Superseded Autoregressive Step Metrics
 
-Step 0 is a no-model baseline: the input image resized to 256 x 256 and compared to the paired
-bone-suppressed target resized to the same shape. Steps 1-5 feed each model output back as the next
-input and compute metrics on the final output for that step count. The tables below are GPU
-evaluations with `device=auto` on Kaggle P100.
+The tables below are from the superseded preprocessing-mismatch pass and are kept only so the
+failed visual QA path is traceable.
 
 ### Pix2Pix GAN MSO2 Retrained v1
 

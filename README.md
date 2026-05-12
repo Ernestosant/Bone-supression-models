@@ -9,16 +9,16 @@ remains in the repository for provenance only and is no longer presented as benc
 
 ## Visual First Look
 
-These deterministic test-split panels show the notebook-compatible input/target domain recovered
-from `Unet_MSO.ipynb`: OpenCV 8-bit read, intensity complement (`255 - image`), grayscale histogram
-equalization, and RGB expansion. This restores the traditional X-ray polarity used in the original
-experiments before the corrective retraining run.
+These deterministic test-split panels show the corrected `gan_mso2` checkpoint at autoregressive
+step `1`, using the notebook-compatible MSO preprocessing recovered from `Unet_MSO.ipynb` and
+`pix2pix.ipynb`: OpenCV 8-bit read, intensity complement (`255 - image`), grayscale histogram
+equalization, and RGB expansion.
 
-![JPCNN072 input and paired BSE target after notebook-compatible preprocessing](docs/assets/examples/retrained_v1/JPCNN072_notebook_preprocessing_input_target.png)
+![JPCNN072 input, GAN MSO2 step 1 output, and paired BSE target](docs/assets/examples/retrained_v1/JPCNN072_gan_mso2_step1_input_output_target.png)
 
-![JPCNN028 input and paired BSE target after notebook-compatible preprocessing](docs/assets/examples/retrained_v1/JPCNN028_notebook_preprocessing_input_target.png)
+![JPCNN028 input, GAN MSO2 step 1 output, and paired BSE target](docs/assets/examples/retrained_v1/JPCNN028_gan_mso2_step1_input_output_target.png)
 
-![JPCLN003 input and paired BSE target after notebook-compatible preprocessing](docs/assets/examples/retrained_v1/JPCLN003_notebook_preprocessing_input_target.png)
+![JPCLN003 input, GAN MSO2 step 1 output, and paired BSE target](docs/assets/examples/retrained_v1/JPCLN003_gan_mso2_step1_input_output_target.png)
 
 ## Why Bone Suppression?
 
@@ -90,7 +90,7 @@ bone-suppression \
   --checkpoint models/checkpoints/gan_mso2_retrained_v1.keras \
   --input path/to/chest-xray.png \
   --output outputs/bone-suppressed.png \
-  --steps 2 \
+  --steps 1 \
   --device cpu
 ```
 
@@ -110,8 +110,8 @@ The canonical model registry is [configs/model_registry.json](configs/model_regi
 
 | Model key | Framework | Status |
 | --- | --- | --- |
-| `gan_mso2` | TensorFlow/Keras | Retrain required after preprocessing correction |
-| `unet_resnet50` | FastAI | Retrain required after preprocessing correction |
+| `gan_mso2` | TensorFlow/Keras | Corrected MSO retrain complete; Drive upload pending |
+| `unet_resnet50` | FastAI | Corrected MSO retrain complete; Drive upload pending |
 
 The Kaggle notebook is
 [notebooks/kaggle_retrain_bone_suppression.ipynb](notebooks/kaggle_retrain_bone_suppression.ipynb).
@@ -121,10 +121,14 @@ comparison panels.
 
 ## Results
 
-The first retrained-v1 metrics were generated before the historical MSO preprocessing was restored,
-so they are kept only as superseded engineering evidence in [docs/results.md](docs/results.md).
-They should not be cited as final research results. The next Kaggle run must retrain and reevaluate
-both models with the notebook-compatible preprocessing path described above.
+Corrected MSO metrics below are measured on the deterministic test holdout using Kaggle P100 GPU
+evaluation with `device=auto`. Step `0` is a no-model baseline and is reported in
+[docs/results.md](docs/results.md), but the selected rows below are real model inference outputs.
+
+| Model | Step | MAE | RMSE | PSNR | SSIM | GPU sec/image |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `gan_mso2` corrected MSO | 1 | 0.020027 | 0.042244 | 27.802648 | 0.989218 | 0.097549 |
+| `unet_resnet50` corrected MSO | 1 | 0.076602 | 0.092698 | 20.675888 | 0.950540 | 0.737866 |
 
 See [docs/training.md](docs/training.md), [docs/evaluation.md](docs/evaluation.md),
 [docs/results.md](docs/results.md), and [docs/provenance.md](docs/provenance.md).
