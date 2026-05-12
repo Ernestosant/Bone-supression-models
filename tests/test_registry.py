@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib import resources
 from pathlib import Path
 
 import pytest
@@ -15,8 +16,8 @@ def test_load_default_registry_contains_expected_models() -> None:
     assert set(registry) == {"gan_mso2", "unet_resnet50"}
     assert registry["gan_mso2"].checkpoint_filename == "gan_mso2_retrained_v1.keras"
     assert registry["gan_mso2"].device_support == ("cpu", "gpu")
-    assert registry["gan_mso2"].available is False
-    assert registry["unet_resnet50"].available is False
+    assert registry["gan_mso2"].available is True
+    assert registry["unet_resnet50"].available is True
 
 
 def test_unknown_model_key_lists_available_models() -> None:
@@ -75,6 +76,23 @@ def test_registry_can_load_packaged_resource(monkeypatch) -> None:
     registry = load_model_registry()
 
     assert set(registry) == {"gan_mso2", "unet_resnet50"}
+
+
+def test_packaged_registry_uses_public_artifact_urls(monkeypatch) -> None:
+    monkeypatch.delenv(registry_module.REGISTRY_ENV_VAR, raising=False)
+    monkeypatch.setattr(registry_module, "_checkout_registry_path", lambda: Path("missing.json"))
+
+    registry_resource = resources.files("bone_suppression").joinpath(
+        registry_module.PACKAGED_REGISTRY
+    )
+    with registry_resource.open("r", encoding="utf-8") as file:
+        payload = json.load(file)
+
+    for entry in payload["models"]:
+        assert "artifact_paths" not in entry
+        assert entry["release_artifacts_url"].startswith(
+            "https://github.com/Ernestosant/Bone-supression-models/releases/download/"
+        )
 
 
 def test_direct_checkpoint_url_normalizes_google_drive_share_link() -> None:

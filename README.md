@@ -49,7 +49,8 @@ wrapper:
    into the model. The documented operating point is selected from the measured sweep, while the
    full step table remains available in `docs/results/`.
 6. Export checkpoints, SHA256 checksums, manifests, metrics, and fixed visual examples. Large
-   checkpoint files stay out of Git and are referenced through the model registry.
+   checkpoint files stay out of Git and are published as release assets with hashes and
+   reproducibility metadata.
 7. Keep user inference CPU-compatible with `--device cpu` and `device="cpu"`. Benchmark metrics are
    generated on Kaggle GPU for speed, but deployed inference does not require a GPU.
 
@@ -73,8 +74,10 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 ```
 
-After retraining, download a checkpoint listed in `configs/model_registry.json` and place it under
-`models/checkpoints/` or any local path outside Git history.
+Download the public checkpoint assets listed in `configs/model_registry.json` and place the local
+checkpoint under `models/checkpoints/` or any local path outside Git history. The corrected MSO
+release is
+[corrected-mso-v1](https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1).
 
 Run the interactive demo:
 
@@ -107,11 +110,16 @@ and research-use considerations.
 ## Models And Reproducibility
 
 The canonical model registry is [configs/model_registry.json](configs/model_registry.json).
+The model card is [MODEL_CARD.md](MODEL_CARD.md).
 
 | Model key | Framework | Status |
 | --- | --- | --- |
-| `gan_mso2` | TensorFlow/Keras | Corrected MSO retrain complete; Drive upload pending |
-| `unet_resnet50` | FastAI | Corrected MSO retrain complete; Drive upload pending |
+| `gan_mso2` | TensorFlow/Keras | Corrected MSO retrain complete; public checkpoint available |
+| `unet_resnet50` | FastAI | Corrected MSO retrain complete; public checkpoint available |
+
+The GAN checkpoint is a single release asset. The U-Net checkpoint is larger, so the release stores
+it as `unet_resnet50_retrained_v1.pkl.part01` through `.part03`; concatenate the parts in order and
+verify the reconstructed file against the SHA256 in the registry.
 
 The Kaggle notebook is
 [notebooks/kaggle_retrain_bone_suppression.ipynb](notebooks/kaggle_retrain_bone_suppression.ipynb).
@@ -148,8 +156,9 @@ tested with mocked models, while retraining commands import TensorFlow/FastAI on
 
 - This repository is for research and engineering experimentation, not clinical diagnosis.
 - Large checkpoints and datasets must remain outside Git history.
-- Public Drive links are placeholders until the corrected checkpoints are uploaded; the previous
-  retrained-v1 metrics are explicitly superseded.
+- Corrected MSO checkpoints, metrics, manifests, checksums, and visual panels are published in the
+  `corrected-mso-v1` GitHub Release.
+- The previous retrained-v1 metrics are explicitly superseded by the corrected MSO results.
 
 ## License
 

@@ -5,11 +5,26 @@
       "display_name": "U-Net ResNet50 Retrained v1",
       "framework": "fastai",
       "architecture": "FastAI U-Net with a pretrained ResNet50 encoder, retrained on deterministic JSRT/BSE_JSRT splits",
-      "status": "trained_pending_drive_upload",
-      "available": false,
-      "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_UNET_RESNET50_RETRAINED_V1_FILE_ID",
+      "status": "Corrected MSO retrain complete; public checkpoint available",
+      "available": true,
+      "checkpoint_url": "https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1",
       "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
       "checkpoint_sha256": "2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b",
+      "checkpoint_availability": "Corrected MSO checkpoint is publicly available as three GitHub Release parts. Concatenate the parts in order to reconstruct unet_resnet50_retrained_v1.pkl, then verify SHA256 against checkpoint_sha256.",
+      "release_url": "https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1",
+      "checkpoint_parts": [
+        "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/unet_resnet50_retrained_v1.pkl.part01",
+        "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/unet_resnet50_retrained_v1.pkl.part02",
+        "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/unet_resnet50_retrained_v1.pkl.part03"
+      ],
+      "release_checksums_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/SHA256SUMS.txt",
+      "release_artifacts_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/corrected_mso_metrics_manifests_panels.zip",
+      "artifact_paths": {
+        "manifest": "docs/results/retrained_v1/unet_resnet50_corrected_mso_manifest.json",
+        "metrics": "docs/results/retrained_v1/unet_resnet50_corrected_mso_metrics.json",
+        "step_metrics": "docs/results/retrained_v1/unet_resnet50_corrected_mso_test_steps_metrics_gpu.json",
+        "run_summary": "docs/results/retrained_v1/unet_resnet50_corrected_mso_run_summary.json"
+      },
       "default_steps": 1,
       "device_support": [
         "cpu",
@@ -82,7 +97,7 @@
         "temporary TIFF handoff for FastAI test_dl"
       ],
       "training_artifacts_url": "https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-mso-corrected-v3",
-      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. FastAI self-attention was disabled after a P100 CUBLAS_STATUS_NOT_SUPPORTED failure in spectral norm self-attention. Public Drive link is pending; this is not the historical checkpoint whose URL returned 404.",
+      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. FastAI self-attention was disabled after a P100 CUBLAS_STATUS_NOT_SUPPORTED failure in spectral norm self-attention. The public GitHub Release stores this large checkpoint as three split parts; concatenate them in order and verify the reconstructed file against checkpoint_sha256.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-unet-v1-checkpoint"
     },
     {
@@ -90,11 +105,21 @@
       "display_name": "Pix2Pix GAN MSO2 Retrained v1",
       "framework": "tensorflow",
       "architecture": "Pix2Pix-style conditional GAN retrained on deterministic JSRT/BSE_JSRT splits",
-      "status": "trained_pending_drive_upload",
-      "available": false,
-      "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_GAN_MSO2_RETRAINED_V1_FILE_ID",
+      "status": "Corrected MSO retrain complete; public checkpoint available",
+      "available": true,
+      "checkpoint_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/gan_mso2_retrained_v1.keras",
       "checkpoint_filename": "gan_mso2_retrained_v1.keras",
       "checkpoint_sha256": "09525519d3c51d6c7fd0377634bdff4f39ddf314180ea94b9d56fdcd49829dc1",
+      "checkpoint_availability": "Corrected MSO checkpoint is publicly available in the GitHub Release. Download checkpoint_url and verify SHA256 against checkpoint_sha256.",
+      "release_url": "https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1",
+      "release_checksums_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/SHA256SUMS.txt",
+      "release_artifacts_url": "https://github.com/Ernestosant/Bone-supression-models/releases/download/corrected-mso-v1/corrected_mso_metrics_manifests_panels.zip",
+      "artifact_paths": {
+        "manifest": "docs/results/retrained_v1/gan_mso2_corrected_mso_manifest.json",
+        "metrics": "docs/results/retrained_v1/gan_mso2_corrected_mso_metrics.json",
+        "step_metrics": "docs/results/retrained_v1/gan_mso2_corrected_mso_test_steps_metrics_gpu.json",
+        "run_summary": "docs/results/retrained_v1/gan_mso2_corrected_mso_run_summary.json"
+      },
       "default_steps": 1,
       "device_support": [
         "cpu",
@@ -168,7 +193,7 @@
         "normalization to [-1, 1]"
       ],
       "training_artifacts_url": "https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-mso-corrected-v2",
-      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. Public Drive link is pending; this is not the historical checkpoint whose URL returned 404.",
+      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. The public GitHub Release provides the checkpoint, checksums, manifests, metrics, and example panels.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-gan-mso2-retrained-v1-checkpoint"
     }
   ]

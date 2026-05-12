@@ -5,12 +5,12 @@ Model metadata is centralized in `configs/model_registry.json` and packaged in
 
 ## Registry Fields
 
-Each model entry records framework, architecture, availability, checkpoint filename, public download
-URL, SHA256, device support, example panels, metrics, preprocessing, and training artifact URL.
+Each canonical checkout registry entry records framework, architecture, availability, checkpoint
+filename, checkpoint policy, SHA256, device support, example panels, metrics, preprocessing,
+repo-local artifact paths, and training artifact URL.
 
-`available` should remain `false` while the checkpoint URL or checksum is a placeholder. Set it to
-`true` only after a public Drive download link has been verified and the local SHA256 matches the
-registry.
+`available` is `true` for the corrected MSO release because public checkpoint assets are available
+and their SHA256 values are recorded in the registry. Large weights remain outside Git history.
 
 ## `gan_mso2`
 
@@ -18,7 +18,7 @@ registry.
 - Architecture: Pix2Pix-style conditional GAN.
 - Retrained-v1 checkpoint: `gan_mso2_retrained_v1.keras`.
 - Device support: CPU and GPU.
-- Current status: corrected MSO retrain complete; public Drive upload pending.
+- Current status: corrected MSO retrain complete; public checkpoint available.
 
 The inference routine applies the historical MSO preprocessing (`255 - image` and histogram
 equalization), resizes large inputs to 256 x 256, normalizes to `[-1, 1]`, calls the generator with
@@ -30,7 +30,7 @@ equalization), resizes large inputs to 256 x 256, normalizes to `[-1, 1]`, calls
 - Architecture: U-Net with a pretrained ResNet50 encoder.
 - Retrained-v1 checkpoint: `unet_resnet50_retrained_v1.pkl`.
 - Device support: CPU and GPU.
-- Current status: corrected MSO retrain complete; public Drive upload pending.
+- Current status: corrected MSO retrain complete; public checkpoint available.
 
 The historical U-Net checkpoint URL returned 404 during review. The retrained-v1 checkpoint should
 be presented as a new reproducible artifact, not as a recovered historical weight.
@@ -43,11 +43,21 @@ Do not commit model weights to Git. Store downloaded checkpoints in `models/chec
 local path and pass the path to the CLI or Gradio app. The repository `.gitignore` excludes common
 checkpoint formats such as `.h5`, `.keras`, `.pkl`, `.pt`, `.pth`, and `.ckpt`.
 
-Every published retrained-v1 checkpoint must have:
+Current retrained-v1 checkpoints are published in the
+[`corrected-mso-v1`](https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1)
+GitHub Release. The GAN is a single `.keras` asset. The corrected U-Net `.pkl` is larger, so it is
+published as `part01`, `part02`, and `part03`; concatenate the parts in order and verify the
+reconstructed file against the registry SHA256.
 
-- A public Google Drive URL.
+The packaged registry in `src/bone_suppression/resources/model_registry.json` avoids checkout-only
+`docs/results/...` references. Installed-package users should use `release_artifacts_url` for the
+public metrics, manifests, run summaries, checksums, and panels bundle.
+
+Every published retrained-v1 checkpoint has:
+
+- A public GitHub Release URL.
 - A SHA256 checksum in the registry.
-- A manifest next to the checkpoint.
+- Manifests, metrics, checksums, and example panels in the release artifact bundle.
 - GPU holdout metrics in `docs/results.md`; optional CPU checks are for user-facing inference
   support.
 - Example panels in `docs/assets/examples/retrained_v1/`.
