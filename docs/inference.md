@@ -68,5 +68,6 @@ BONE_SUPPRESSION_MODEL_REGISTRY=path/to/model_registry.json
 - `Install the TensorFlow requirements`: install `requirements/gan-mso2.txt`.
 - `Install the U-Net/FastAI requirements`: install `requirements/unet-resnet50.txt`.
 - `Unknown model`: check valid keys in `configs/model_registry.json`.
-- Empty model dropdown: registry entries remain unavailable until public checkpoint URLs and
-  SHA256 values are filled after retraining.
+- Empty model dropdown: registry entries remain unavailable when checkpoints are not redistributed;
+  provide a local checkpoint path through the CLI or publish verified checkpoint URLs before setting
+  registry entries to `available: true`.

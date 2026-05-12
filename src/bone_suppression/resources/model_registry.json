@@ -5,11 +5,18 @@
       "display_name": "U-Net ResNet50 Retrained v1",
       "framework": "fastai",
       "architecture": "FastAI U-Net with a pretrained ResNet50 encoder, retrained on deterministic JSRT/BSE_JSRT splits",
-      "status": "trained_pending_drive_upload",
+      "status": "trained_not_redistributed",
       "available": false,
-      "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_UNET_RESNET50_RETRAINED_V1_FILE_ID",
+      "checkpoint_url": "",
       "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
       "checkpoint_sha256": "2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b",
+      "checkpoint_availability": "Checkpoints are not redistributed due to size/storage constraints; metrics, hashes, manifests, scripts, visual panels, and reproducibility instructions are provided.",
+      "artifact_paths": {
+        "manifest": "docs/results/retrained_v1/unet_resnet50_corrected_mso_manifest.json",
+        "metrics": "docs/results/retrained_v1/unet_resnet50_corrected_mso_metrics.json",
+        "step_metrics": "docs/results/retrained_v1/unet_resnet50_corrected_mso_test_steps_metrics_gpu.json",
+        "run_summary": "docs/results/retrained_v1/unet_resnet50_corrected_mso_run_summary.json"
+      },
       "default_steps": 1,
       "device_support": [
         "cpu",
@@ -82,7 +89,7 @@
         "temporary TIFF handoff for FastAI test_dl"
       ],
       "training_artifacts_url": "https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-mso-corrected-v3",
-      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. FastAI self-attention was disabled after a P100 CUBLAS_STATUS_NOT_SUPPORTED failure in spectral norm self-attention. Public Drive link is pending; this is not the historical checkpoint whose URL returned 404.",
+      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. FastAI self-attention was disabled after a P100 CUBLAS_STATUS_NOT_SUPPORTED failure in spectral norm self-attention. The checkpoint is not redistributed from this repository due to size/storage constraints; reproduce it with the documented Kaggle workflow and verify the exported SHA256 against this registry.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-unet-v1-checkpoint"
     },
     {
@@ -90,11 +97,18 @@
       "display_name": "Pix2Pix GAN MSO2 Retrained v1",
       "framework": "tensorflow",
       "architecture": "Pix2Pix-style conditional GAN retrained on deterministic JSRT/BSE_JSRT splits",
-      "status": "trained_pending_drive_upload",
+      "status": "trained_not_redistributed",
       "available": false,
-      "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_GAN_MSO2_RETRAINED_V1_FILE_ID",
+      "checkpoint_url": "",
       "checkpoint_filename": "gan_mso2_retrained_v1.keras",
       "checkpoint_sha256": "09525519d3c51d6c7fd0377634bdff4f39ddf314180ea94b9d56fdcd49829dc1",
+      "checkpoint_availability": "Checkpoints are not redistributed due to size/storage constraints; metrics, hashes, manifests, scripts, visual panels, and reproducibility instructions are provided.",
+      "artifact_paths": {
+        "manifest": "docs/results/retrained_v1/gan_mso2_corrected_mso_manifest.json",
+        "metrics": "docs/results/retrained_v1/gan_mso2_corrected_mso_metrics.json",
+        "step_metrics": "docs/results/retrained_v1/gan_mso2_corrected_mso_test_steps_metrics_gpu.json",
+        "run_summary": "docs/results/retrained_v1/gan_mso2_corrected_mso_run_summary.json"
+      },
       "default_steps": 1,
       "device_support": [
         "cpu",
@@ -168,7 +182,7 @@
         "normalization to [-1, 1]"
       ],
       "training_artifacts_url": "https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-mso-corrected-v2",
-      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. Public Drive link is pending; this is not the historical checkpoint whose URL returned 404.",
+      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. The checkpoint is not redistributed from this repository due to size/storage constraints; reproduce it with the documented Kaggle workflow and verify the exported SHA256 against this registry.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-gan-mso2-retrained-v1-checkpoint"
     }
   ]

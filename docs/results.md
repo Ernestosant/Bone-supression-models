@@ -102,10 +102,12 @@ failed visual QA path is traceable.
 | 4 | 0.005655 | 0.055698 | 35.375760 | 0.603625 | 1.401692 |
 | 5 | 0.006114 | 0.058591 | 35.048709 | 0.546010 | 1.674331 |
 
-## Publication Checklist
+## Artifact Availability
 
-Remaining publication tasks:
+The corrected retrained-v1 checkpoints are not redistributed from this repository due to
+size/storage constraints. The repository provides metrics, SHA256 hashes, manifests, scripts,
+visual panels, and reproducibility instructions so the artifacts can be regenerated and checked.
 
-1. Upload checkpoints, manifests, metrics, and panels to Google Drive.
-2. Make Drive files public/readable and copy direct download links into `configs/model_registry.json`
-   and `src/bone_suppression/resources/model_registry.json`.
+If a public checkpoint release is added later, publish checkpoints, manifests, metrics, and panels
+through Google Drive, Hugging Face, or GitHub Releases; then copy verified direct checkpoint links
+into `configs/model_registry.json` and `src/bone_suppression/resources/model_registry.json`.

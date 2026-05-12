@@ -23,8 +23,10 @@ inference workflow, evaluation protocol, and development process.
 - [Dataset](dataset.md): source dataset, access, split policy, and preprocessing assumptions.
 - [Training](training.md): Kaggle and local retraining workflow.
 - [Evaluation](evaluation.md): holdout metrics and example generation.
-- [Results](results.md): final results table template and publication checklist.
+- [Results](results.md): corrected metrics, superseded results, and artifact availability.
 - [Models](models.md): architecture summaries, checkpoint policy, and registry fields.
+- [Model Card](../MODEL_CARD.md): intended use, metrics, limitations, checkpoint availability, and
+  responsible use.
 - [Inference](inference.md): CLI and Gradio usage.
 - [Provenance](provenance.md): dataset, historical weights, and notebook provenance.
 - [Development](development.md): setup, tests, code style, and contribution workflow.
