@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from pathlib import Path
 
 import numpy as np
+from PIL import Image
 
 try:  # pragma: no cover - fallback is exercised when OpenCV is unavailable.
     import cv2
@@ -13,6 +15,10 @@ except ImportError:  # pragma: no cover
 
 
 ArrayLikeImage = np.ndarray
+LEGACY_MSO_PREPROCESSING = (
+    "OpenCV 8-bit read, intensity inversion with 255-image, grayscale histogram "
+    "equalization, and RGB expansion"
+)
 
 
 def ensure_rgb(image: ArrayLikeImage) -> np.ndarray:
@@ -58,6 +64,55 @@ def histogram_equalize_rgb(image: ArrayLikeImage) -> np.ndarray:
     return np.stack([equalized, equalized, equalized], axis=-1)
 
 
+def legacy_mso_preprocess(image: ArrayLikeImage) -> np.ndarray:
+    """Match the original MSO notebooks: invert intensities, then equalize grayscale."""
+    rgb = ensure_rgb(image)
+    return histogram_equalize_rgb(255 - rgb)
+
+
+def read_cv2_uint8_rgb(path: str | Path) -> np.ndarray:
+    """Read an image like the notebooks did with ``cv2.imread`` default flags."""
+    image_path = Path(path)
+    if cv2 is not None:
+        bgr = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
+        if bgr is None:
+            raise FileNotFoundError(f"Image could not be read: {image_path}")
+        return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+
+    if not image_path.exists():  # pragma: no cover - OpenCV is a runtime dependency.
+        raise FileNotFoundError(f"Image could not be read: {image_path}")
+    return ensure_rgb(np.asarray(Image.open(image_path).convert("RGB")))
+
+
+def read_legacy_mso_image(path: str | Path) -> np.ndarray:
+    """Read and preprocess a JSRT/BSE image using the historical MSO notebook path."""
+    return legacy_mso_preprocess(read_cv2_uint8_rgb(path))
+
+
+def save_legacy_mso_image(
+    input_path: str | Path,
+    output_path: str | Path,
+    image_size: int | None = None,
+) -> None:
+    """Write a notebook-compatible preprocessed image for cached training datasets."""
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = read_legacy_mso_image(input_path)
+    if image_size is not None:
+        image = resize_to_square(image, image_size)
+    Image.fromarray(image).save(path)
+
+
+def resize_to_square(image: ArrayLikeImage, image_size: int) -> np.ndarray:
+    """Resize an RGB image to a square using the training interpolation path."""
+    rgb = ensure_rgb(image)
+    if cv2 is not None:
+        return cv2.resize(rgb, (image_size, image_size), interpolation=cv2.INTER_LINEAR)
+
+    resized = Image.fromarray(rgb).resize((image_size, image_size), Image.BILINEAR)
+    return np.asarray(resized.convert("RGB"))
+
+
 def resize_if_larger(
     image: ArrayLikeImage,
     target_size: tuple[int, int] = (256, 256),
@@ -83,8 +138,11 @@ def normalize_to_minus_one_one(image: ArrayLikeImage) -> np.ndarray:
     return ensure_rgb(image).astype(np.float32) / 127.5 - 1.0
 
 
-def output_to_uint8_image(output: ArrayLikeImage) -> np.ndarray:
-    """Convert model output in [0, 1] or [-1, 1] into uint8 RGB."""
+def output_to_uint8_image(
+    output: ArrayLikeImage,
+    source_range: tuple[float, float] | None = None,
+) -> np.ndarray:
+    """Convert model output into uint8 RGB without saturating common ranges."""
     array = np.asarray(output)
     if array.ndim == 3 and array.shape[0] in {1, 3} and array.shape[-1] not in {1, 3, 4}:
         array = np.transpose(array, (1, 2, 0))
@@ -93,10 +151,51 @@ def output_to_uint8_image(output: ArrayLikeImage) -> np.ndarray:
     if array.ndim == 3 and array.shape[-1] == 1:
         array = np.repeat(array, 3, axis=-1)
 
-    array = np.nan_to_num(array.astype(np.float32), nan=0.0, posinf=1.0, neginf=-1.0)
-    if array.size and array.min() < 0.0:
+    array = array.astype(np.float32)
+    if not array.size:
+        return ensure_rgb(array)
+
+    if source_range is not None:
+        low, high = source_range
+        if high <= low:
+            raise ValueError("source_range high value must be greater than low value.")
+        array = np.nan_to_num(array, nan=low, posinf=high, neginf=low)
+        scaled = (array - low) / (high - low)
+        return ensure_rgb(np.clip(scaled, 0.0, 1.0))
+
+    finite = array[np.isfinite(array)]
+    if finite.size == 0:
+        return ensure_rgb(np.nan_to_num(array, nan=0.0, posinf=255.0, neginf=0.0))
+
+    array_min = float(finite.min())
+    array_max = float(finite.max())
+    if array_min >= -1.0 and array_max <= 1.0 and array_min < 0.0:
+        array = np.nan_to_num(array, nan=-1.0, posinf=1.0, neginf=-1.0)
         array = array * 0.5 + 0.5
-    return ensure_rgb(np.clip(array, 0.0, 1.0))
+        return ensure_rgb(np.clip(array, 0.0, 1.0))
+    if array_min >= 0.0 and array_max <= 1.0:
+        array = np.nan_to_num(array, nan=0.0, posinf=1.0, neginf=0.0)
+        return ensure_rgb(np.clip(array, 0.0, 1.0))
+    if array_min >= 0.0 and array_max <= 255.0:
+        array = np.nan_to_num(array, nan=0.0, posinf=255.0, neginf=0.0)
+        return ensure_rgb(array)
+
+    return ensure_rgb(_window_to_uint8(array))
+
+
+def _window_to_uint8(array: np.ndarray) -> np.ndarray:
+    finite = array[np.isfinite(array)]
+    if finite.size == 0:
+        return np.zeros(array.shape, dtype=np.uint8)
+    low, high = np.percentile(finite, [0.5, 99.5])
+    if not np.isfinite(low) or not np.isfinite(high) or high <= low:
+        low = float(finite.min())
+        high = float(finite.max())
+    if high <= low:
+        return np.zeros(array.shape, dtype=np.uint8)
+    safe = np.nan_to_num(array.astype(np.float32), nan=low, posinf=high, neginf=low)
+    scaled = (safe - low) / (high - low)
+    return np.clip(np.round(scaled * 255.0), 0, 255).astype(np.uint8)
 
 
 def _equalize_histogram(gray: np.ndarray) -> np.ndarray:

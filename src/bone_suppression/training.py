@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 import random
+import tempfile
 import time
 from dataclasses import asdict, dataclass
+from os import getenv
 from pathlib import Path
 from typing import Any
 
 import numpy as np
-from PIL import Image
 
 from bone_suppression.artifacts import build_manifest, write_json
 from bone_suppression.dataset import DATASET_SLUG, DEFAULT_SEED, ImagePair, load_splits
+from bone_suppression.preprocessing import (
+    LEGACY_MSO_PREPROCESSING,
+    read_legacy_mso_image,
+    resize_to_square,
+    save_legacy_mso_image,
+)
 
 
 @dataclass(frozen=True)
@@ -126,7 +133,11 @@ def train_gan_mso2(config: TrainConfig) -> dict[str, Any]:
     checkpoint_path = config.output_dir / "gan_mso2_retrained_v1.keras"
     generator.save(checkpoint_path)
     write_json(config.output_dir / "gan_mso2_history.json", {"history": history})
-    hyperparameters = _config_payload(config) | {"lambda_l1": lambda_l1}
+    hyperparameters = _config_payload(config) | {
+        "lambda_l1": lambda_l1,
+        "preprocessing": LEGACY_MSO_PREPROCESSING,
+        "historical_reference": "pix2pix.ipynb preprocessing",
+    }
     manifest = build_manifest(
         model_key=config.model_key,
         checkpoint_path=checkpoint_path,
@@ -148,8 +159,12 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
             ImageBlock,
             IndexSplitter,
             MSELossFlat,
+            Normalize,
+            NormType,
             Resize,
+            ResizeMethod,
             aug_transforms,
+            imagenet_stats,
             resnet50,
             unet_learner,
         )
@@ -164,6 +179,9 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
     splits = load_splits(config.splits_path, config.dataset_root)
     train_pairs = _limit_pairs(splits["train"], config.limit)
     valid_pairs = _limit_pairs(splits["validation"], config.limit)
+    cache_root = _legacy_cache_root(config)
+    train_pairs = _prepare_legacy_mso_cache(train_pairs, cache_root, config.image_size)
+    valid_pairs = _prepare_legacy_mso_cache(valid_pairs, cache_root, config.image_size)
     all_pairs = train_pairs + valid_pairs
     valid_indices = list(range(len(train_pairs), len(all_pairs)))
 
@@ -172,18 +190,33 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
         get_x=pair_input_path,
         get_y=pair_target_path,
         splitter=IndexSplitter(valid_indices),
-        item_tfms=Resize(config.image_size),
-        batch_tfms=aug_transforms(do_flip=True, max_rotate=3.0, max_zoom=1.05),
+        item_tfms=Resize(config.image_size, ResizeMethod.Crop),
+        batch_tfms=[
+            *aug_transforms(max_zoom=1.0, flip_vert=True, do_flip=True, max_rotate=10),
+            Normalize.from_stats(*imagenet_stats),
+        ],
     )
     dls = block.dataloaders(all_pairs, bs=config.batch_size)
+    dls.c = 3
+    weight_decay = 1e-3
+    y_range = (-3.0, 3.0)
+    self_attention = _env_flag("BONE_SUPPRESSION_UNET_SELF_ATTENTION", default=False)
     learner = unet_learner(
         dls,
         resnet50,
         n_out=3,
         pretrained=config.pretrained,
+        norm_type=NormType.Weight,
+        self_attention=self_attention,
+        y_range=y_range,
         loss_func=MSELossFlat(),
     )
-    learner.fit_one_cycle(config.epochs, lr_max=config.learning_rate)
+    learner.fit_one_cycle(
+        config.epochs,
+        lr_max=config.learning_rate,
+        pct_start=0.8,
+        wd=weight_decay,
+    )
 
     config.output_dir.mkdir(parents=True, exist_ok=True)
     checkpoint_path = config.output_dir / "unet_resnet50_retrained_v1.pkl"
@@ -194,7 +227,20 @@ def train_unet_resnet50(config: TrainConfig) -> dict[str, Any]:
         dataset_slug=DATASET_SLUG,
         split_path=config.splits_path,
         seed=config.seed,
-        hyperparameters=_config_payload(config),
+        hyperparameters=_config_payload(config)
+        | {
+            "preprocessing": LEGACY_MSO_PREPROCESSING,
+            "weight_decay": weight_decay,
+            "y_range": list(y_range),
+            "self_attention": self_attention,
+            "fastai_resize_method": "crop",
+            "fastai_normalization": "imagenet_stats",
+            "historical_reference": "Unet_MSO.ipynb preprocessing",
+            "p100_note": (
+                "self_attention defaults to false because FastAI spectral norm self-attention "
+                "failed on Kaggle Tesla P100 with CUBLAS_STATUS_NOT_SUPPORTED"
+            ),
+        },
     )
     write_json(config.output_dir / "unet_resnet50_manifest.json", manifest)
     return manifest
@@ -234,9 +280,45 @@ def _load_pair_arrays(pair: ImagePair, image_size: int) -> tuple[np.ndarray, np.
 
 
 def _load_normalized_image(path: Path, image_size: int) -> np.ndarray:
-    image = Image.open(path).convert("RGB").resize((image_size, image_size), Image.BICUBIC)
-    array = np.asarray(image).astype(np.float32)
+    image = resize_to_square(read_legacy_mso_image(path), image_size)
+    array = image.astype(np.float32)
     return array / 127.5 - 1.0
+
+
+def _legacy_cache_root(config: TrainConfig) -> Path:
+    configured = getenv("BONE_SUPPRESSION_PREPROCESSED_CACHE_DIR")
+    if configured:
+        return Path(configured)
+    return (
+        Path(tempfile.gettempdir())
+        / "bone_suppression_legacy_mso"
+        / config.model_key
+        / f"seed_{config.seed}_size_{config.image_size}"
+    )
+
+
+def _prepare_legacy_mso_cache(
+    pairs: list[ImagePair],
+    cache_root: Path,
+    image_size: int,
+) -> list[ImagePair]:
+    cached_pairs: list[ImagePair] = []
+    for pair in pairs:
+        input_path = cache_root / "source" / f"{pair.id}.png"
+        target_path = cache_root / "target" / f"{pair.id}.png"
+        if not input_path.exists():
+            save_legacy_mso_image(pair.input_path, input_path, image_size=image_size)
+        if not target_path.exists():
+            save_legacy_mso_image(pair.target_path, target_path, image_size=image_size)
+        cached_pairs.append(ImagePair(pair.id, input_path, target_path))
+    return cached_pairs
+
+
+def _env_flag(name: str, default: bool) -> bool:
+    value = getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _tf_pair_dataset(

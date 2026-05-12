@@ -15,6 +15,11 @@ from bone_suppression.dataset import DATASET_SLUG, load_splits
 from bone_suppression.inference import predict_model
 from bone_suppression.metrics import aggregate_metrics, image_metrics
 from bone_suppression.model_io import load_model
+from bone_suppression.preprocessing import (
+    legacy_mso_preprocess,
+    read_cv2_uint8_rgb,
+    read_legacy_mso_image,
+)
 from bone_suppression.registry import get_model_spec
 
 
@@ -48,8 +53,8 @@ def evaluate_checkpoint(
 
     records: list[dict[str, Any]] = []
     for pair in pairs:
-        input_image = _read_rgb(pair.input_path)
-        target_image = _read_rgb(pair.target_path)
+        input_image = read_cv2_uint8_rgb(pair.input_path)
+        target_image = read_legacy_mso_image(pair.target_path)
 
         start = time.perf_counter()
         prediction = predict_model(model, spec, input_image, steps=steps)
@@ -132,12 +137,12 @@ def evaluate_checkpoint_steps(
 
         records: list[dict[str, Any]] = []
         for pair in pairs:
-            input_image = _read_rgb(pair.input_path)
-            target_image = _read_rgb(pair.target_path)
+            input_image = read_cv2_uint8_rgb(pair.input_path)
+            target_image = read_legacy_mso_image(pair.target_path)
 
             start = time.perf_counter()
             if step_count == 0:
-                prediction = _resize_to_size(input_image, step0_size)
+                prediction = _resize_to_size(legacy_mso_preprocess(input_image), step0_size)
             else:
                 prediction = predict_model(model, spec, input_image, steps=step_count)
             elapsed = time.perf_counter() - start
@@ -202,8 +207,8 @@ def build_comparison_examples(
     written: list[Path] = []
     for pair in pairs:
         images: list[tuple[str, np.ndarray]] = [
-            ("Input", _read_rgb(pair.input_path)),
-            ("Target", _read_rgb(pair.target_path)),
+            ("Input", read_legacy_mso_image(pair.input_path)),
+            ("Target", read_legacy_mso_image(pair.target_path)),
         ]
         for model_key, prediction_dir in prediction_dirs.items():
             pred_path = Path(prediction_dir) / f"{pair.id}.png"
@@ -238,8 +243,8 @@ def build_step_comparison_examples(
     written: list[Path] = []
     for pair in pairs:
         images: list[tuple[str, np.ndarray]] = [
-            ("Input", _read_rgb(pair.input_path)),
-            ("Target", _read_rgb(pair.target_path)),
+            ("Input", read_legacy_mso_image(pair.input_path)),
+            ("Target", read_legacy_mso_image(pair.target_path)),
         ]
         for step_count in steps_values:
             pred_path = predictions / f"steps_{step_count}" / f"{pair.id}.png"

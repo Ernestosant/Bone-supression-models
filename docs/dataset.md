@@ -35,13 +35,18 @@ shuffling with seed `2026`.
 
 ## Preprocessing Assumptions
 
-The inference package applies a conservative preprocessing sequence based on the original demo:
+The corrected retraining path follows the historical MSO notebooks (`Unet_MSO.ipynb` and
+`pix2pix.ipynb`) before training, evaluation, and example generation:
 
-- Convert grayscale, single-channel, or RGBA inputs to RGB.
-- Apply histogram equalization to image intensity.
-- Resize GAN inputs to 256 x 256 when the uploaded image is larger than the target size.
-- Normalize GAN inputs to `[-1, 1]`.
+- Read each PNG with OpenCV default flags, which yields an 8-bit 3-channel image.
+- Apply the intensity complement `255 - image`.
+- Convert to grayscale, apply `cv2.equalizeHist`, then expand back to RGB.
+- Resize/normalize model inputs after this notebook-compatible preprocessing step.
 - Use a temporary TIFF handoff for FastAI U-Net inference because `test_dl` expects file-based input.
+
+This matters because `BSE_JSRT` target PNG files are stored as 16-bit images. Reading them through
+Pillow/FastAI directly changes the numeric range relative to the original notebooks and produced
+misleading visual examples in the first retrained-v1 pass.
 
 ## Research-Use Considerations
 

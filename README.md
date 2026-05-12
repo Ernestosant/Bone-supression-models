@@ -4,9 +4,21 @@ Research-oriented tooling for generating bone-suppressed chest X-ray images with
 models. The project now includes reproducible dataset splitting, Kaggle retraining commands,
 GPU evaluation utilities, CPU-capable inference, and transparent model metadata.
 
-Retrained-v1 visual examples are stored in `docs/assets/examples/retrained_v1/` and are generated
-from the deterministic test split. The historical static visual remains in the repository for
-provenance only and is no longer presented as benchmark evidence.
+Visual examples are stored in `docs/assets/examples/retrained_v1/`. The historical static visual
+remains in the repository for provenance only and is no longer presented as benchmark evidence.
+
+## Visual First Look
+
+These deterministic test-split panels show the corrected `gan_mso2` checkpoint at autoregressive
+step `1`, using the notebook-compatible MSO preprocessing recovered from `Unet_MSO.ipynb` and
+`pix2pix.ipynb`: OpenCV 8-bit read, intensity complement (`255 - image`), grayscale histogram
+equalization, and RGB expansion.
+
+![JPCNN072 input, GAN MSO2 step 1 output, and paired BSE target](docs/assets/examples/retrained_v1/JPCNN072_gan_mso2_step1_input_output_target.png)
+
+![JPCNN028 input, GAN MSO2 step 1 output, and paired BSE target](docs/assets/examples/retrained_v1/JPCNN028_gan_mso2_step1_input_output_target.png)
+
+![JPCLN003 input, GAN MSO2 step 1 output, and paired BSE target](docs/assets/examples/retrained_v1/JPCLN003_gan_mso2_step1_input_output_target.png)
 
 ## Why Bone Suppression?
 
@@ -27,15 +39,18 @@ wrapper:
    The primary metrics use only non-augmented images to avoid leakage.
 2. Create a deterministic 70/15/15 train/validation/test split with seed `2026`. The split is
    saved as `splits.json` and reused by training, evaluation, and example generation.
-3. Retrain both model families on Kaggle P100: TensorFlow/Keras for `gan_mso2` and FastAI/PyTorch
+3. Reproduce the historical MSO preprocessing before training or evaluation: `cv2.imread` default
+   8-bit loading, `255 - image`, grayscale `equalizeHist`, and RGB expansion. This is especially
+   important for BSE target PNG files, which are stored as 16-bit images.
+4. Retrain both model families on Kaggle P100: TensorFlow/Keras for `gan_mso2` and FastAI/PyTorch
    for `unet_resnet50`. Augmentation is applied on the fly to train images only.
-4. Evaluate both checkpoints on the fixed test split with autoregressive inference steps
+5. Evaluate both checkpoints on the fixed test split with autoregressive inference steps
    `0,1,2,3,4,5`. Step `0` is the input baseline; each later step feeds the previous output back
    into the model. The documented operating point is selected from the measured sweep, while the
    full step table remains available in `docs/results/`.
-5. Export checkpoints, SHA256 checksums, manifests, metrics, and fixed visual examples. Large
+6. Export checkpoints, SHA256 checksums, manifests, metrics, and fixed visual examples. Large
    checkpoint files stay out of Git and are referenced through the model registry.
-6. Keep user inference CPU-compatible with `--device cpu` and `device="cpu"`. Benchmark metrics are
+7. Keep user inference CPU-compatible with `--device cpu` and `device="cpu"`. Benchmark metrics are
    generated on Kaggle GPU for speed, but deployed inference does not require a GPU.
 
 ## Repository Structure
@@ -75,7 +90,7 @@ bone-suppression \
   --checkpoint models/checkpoints/gan_mso2_retrained_v1.keras \
   --input path/to/chest-xray.png \
   --output outputs/bone-suppressed.png \
-  --steps 2 \
+  --steps 1 \
   --device cpu
 ```
 
@@ -95,8 +110,8 @@ The canonical model registry is [configs/model_registry.json](configs/model_regi
 
 | Model key | Framework | Status |
 | --- | --- | --- |
-| `gan_mso2` | TensorFlow/Keras | Retrained-v1 pipeline ready; public Drive checkpoint pending |
-| `unet_resnet50` | FastAI | Retrained-v1 pipeline ready; public Drive checkpoint pending |
+| `gan_mso2` | TensorFlow/Keras | Corrected MSO retrain complete; Drive upload pending |
+| `unet_resnet50` | FastAI | Corrected MSO retrain complete; Drive upload pending |
 
 The Kaggle notebook is
 [notebooks/kaggle_retrain_bone_suppression.ipynb](notebooks/kaggle_retrain_bone_suppression.ipynb).
@@ -106,14 +121,14 @@ comparison panels.
 
 ## Results
 
-Retrained-v1 metrics below are measured on the deterministic test holdout using Kaggle GPU
-evaluation with `device=auto`. The selected step is the best MAE/SSIM operating point from the
-documented `0,1,2,3,4,5` autoregressive sweep.
+Corrected MSO metrics below are measured on the deterministic test holdout using Kaggle P100 GPU
+evaluation with `device=auto`. Step `0` is a no-model baseline and is reported in
+[docs/results.md](docs/results.md), but the selected rows below are real model inference outputs.
 
 | Model | Step | MAE | RMSE | PSNR | SSIM | GPU sec/image |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `gan_mso2` retrained v1 | 1 | 0.011330 | 0.046331 | 27.456801 | 0.749001 | 0.108497 |
-| `unet_resnet50` retrained v1 | 1 | 0.003033 | 0.034316 | 36.057932 | 0.874740 | 0.635685 |
+| `gan_mso2` corrected MSO | 1 | 0.020027 | 0.042244 | 27.802648 | 0.989218 | 0.097549 |
+| `unet_resnet50` corrected MSO | 1 | 0.076602 | 0.092698 | 20.675888 | 0.950540 | 0.737866 |
 
 See [docs/training.md](docs/training.md), [docs/evaluation.md](docs/evaluation.md),
 [docs/results.md](docs/results.md), and [docs/provenance.md](docs/provenance.md).
@@ -133,8 +148,8 @@ tested with mocked models, while retraining commands import TensorFlow/FastAI on
 
 - This repository is for research and engineering experimentation, not clinical diagnosis.
 - Large checkpoints and datasets must remain outside Git history.
-- Public Drive links are placeholders until the final upload; SHA256 values and metrics are already
-  recorded for retrained-v1.
+- Public Drive links are placeholders until the corrected checkpoints are uploaded; the previous
+  retrained-v1 metrics are explicitly superseded.
 
 ## License
 

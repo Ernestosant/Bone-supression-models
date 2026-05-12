@@ -11,9 +11,10 @@ images. Test metrics must not use the Kaggle `augmented/` directory.
 
 ## Autoregressive Steps
 
-Both retrained models are evaluated with autoregressive step counts `0, 1, 2, 3, 4, 5`.
+Both retrained models are evaluated with autoregressive step counts `0, 1, 2, 3, 4, 5` after the
+notebook-compatible MSO preprocessing path has been applied.
 
-- Step 0 is the no-model baseline: the input image resized to 256 x 256.
+- Step 0 is the no-model baseline: the preprocessed input image resized to 256 x 256.
 - Step 1 runs the model once.
 - Steps 2-5 feed each output back as the next input and calculate metrics on the final output.
 
@@ -32,8 +33,9 @@ The evaluation CLI reports:
   with `device=auto` on Kaggle GPU.
 - `cpu_seconds_per_image`: optional CPU inference timing for user-facing compatibility checks.
 
-Generated predictions are compared against targets resized to the prediction resolution. This keeps
-the metric contract stable for 256 x 256 retrained models while preserving the original dataset files.
+Generated predictions are compared against notebook-preprocessed targets resized to the prediction
+resolution. This keeps the metric contract stable for 256 x 256 retrained models while preserving
+the original dataset files.
 
 ## Commands
 

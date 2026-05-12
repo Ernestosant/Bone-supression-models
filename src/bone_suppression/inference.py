@@ -11,6 +11,7 @@ from bone_suppression.model_io import load_model
 from bone_suppression.preprocessing import (
     ensure_rgb,
     histogram_equalize_rgb,
+    legacy_mso_preprocess,
     normalize_to_minus_one_one,
     output_to_uint8_image,
     resize_if_larger,
@@ -58,28 +59,30 @@ def predict_model(
 
 def predict_pix2pix_gan(model, image: np.ndarray, steps: int = 2) -> np.ndarray:
     """Run Pix2Pix-style iterative inference."""
-    current = histogram_equalize_rgb(image)
+    current = legacy_mso_preprocess(image)
+    prediction = current
 
     for _ in range(validate_steps(steps, 2)):
         model_input = resize_if_larger(current, target_size=(256, 256))
         model_input = normalize_to_minus_one_one(model_input)
         raw_output = model(model_input[np.newaxis, ...], training=True)
-        prediction = _as_numpy(raw_output)[0]
-        prediction = prediction * 0.5 + 0.5
-        current = histogram_equalize_rgb(to_uint8(np.clip(prediction, 0.0, 1.0)))
+        prediction = _as_numpy(raw_output)[0] * 0.5 + 0.5
+        prediction = to_uint8(np.clip(prediction, 0.0, 1.0))
+        current = histogram_equalize_rgb(prediction)
 
-    return ensure_rgb(current)
+    return ensure_rgb(prediction)
 
 
 def predict_unet_resnet50(model, image: np.ndarray, steps: int = 2) -> np.ndarray:
     """Run FastAI U-Net inference using temporary files required by test_dl."""
-    current = histogram_equalize_rgb(image)
+    current = legacy_mso_preprocess(image)
+    prediction = current
 
     for _ in range(validate_steps(steps, 2)):
-        current = _predict_unet_once(model, current)
-        current = histogram_equalize_rgb(current)
+        prediction = _predict_unet_once(model, current)
+        current = histogram_equalize_rgb(prediction)
 
-    return ensure_rgb(current)
+    return ensure_rgb(prediction)
 
 
 def _predict_unet_once(model, image: np.ndarray) -> np.ndarray:
@@ -91,7 +94,7 @@ def _predict_unet_once(model, image: np.ndarray) -> np.ndarray:
         with tempfile.NamedTemporaryFile(suffix=".tif", delete=False) as tmp_file:
             tmp_path = Path(tmp_file.name)
 
-        rgb = histogram_equalize_rgb(image)
+        rgb = ensure_rgb(image)
         cv2.imwrite(str(tmp_path), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
         dl = model.dls.test_dl(str(tmp_path))
         preds = model.get_preds(dl=dl)
@@ -100,7 +103,7 @@ def _predict_unet_once(model, image: np.ndarray) -> np.ndarray:
         if raw.ndim == 3 and raw.shape[0] in {1, 3}:
             raw = np.transpose(raw, (1, 2, 0))
 
-        return output_to_uint8_image(raw)
+        return output_to_uint8_image(raw, source_range=(-3.0, 3.0))
     finally:
         if tmp_path is not None:
             tmp_path.unlink(missing_ok=True)

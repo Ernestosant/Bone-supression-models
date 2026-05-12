@@ -9,8 +9,8 @@
       "available": false,
       "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_UNET_RESNET50_RETRAINED_V1_FILE_ID",
       "checkpoint_filename": "unet_resnet50_retrained_v1.pkl",
-      "checkpoint_sha256": "0a4be7cea81f7c8013b46ad276e8dd92b5bbd8e9689754faddd293621b044b3a",
-      "default_steps": 2,
+      "checkpoint_sha256": "2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b",
+      "default_steps": 1,
       "device_support": [
         "cpu",
         "gpu"
@@ -28,58 +28,61 @@
         "counts": {
           "evaluated": 37
         },
+        "selection_note": "Step 0 is a no-model baseline and excluded from model selection.",
         "steps": {
           "0": {
-            "mae": 0.7542635444048289,
-            "rmse": 0.7789474284219576,
-            "psnr": 2.1865244607264245,
-            "ssim": 0.03931388448894867,
-            "inference_seconds_per_image": 0.03834501397300669
+            "inference_seconds_per_image": 0.05604556518917004,
+            "mae": 0.01866501831525081,
+            "psnr": 29.562923094140633,
+            "rmse": 0.036400364214238326,
+            "ssim": 0.9914400495222753
           },
           "1": {
-            "mae": 0.003032646700548129,
-            "rmse": 0.03431639736812651,
-            "psnr": 36.057931635945145,
-            "ssim": 0.8747402543460997,
-            "inference_seconds_per_image": 0.6356853820810815
+            "inference_seconds_per_image": 0.7378661798107788,
+            "mae": 0.07660197889482653,
+            "psnr": 20.675887652126143,
+            "rmse": 0.09269827909619566,
+            "ssim": 0.9505399771464463
           },
           "2": {
-            "mae": 0.0034876804893920546,
-            "rmse": 0.039872975444614926,
-            "psnr": 37.566403777436875,
-            "ssim": 0.8263365836327676,
-            "inference_seconds_per_image": 0.8797970945945938
+            "inference_seconds_per_image": 1.0146967459729632,
+            "mae": 0.08252750598901026,
+            "psnr": 20.09676527746479,
+            "rmse": 0.09898672138326994,
+            "ssim": 0.9425283580177908
           },
           "3": {
-            "mae": 0.004944182436579345,
-            "rmse": 0.05087692113839105,
-            "psnr": 35.970157242411055,
-            "ssim": 0.6851476865327273,
-            "inference_seconds_per_image": 1.140543068486467
+            "inference_seconds_per_image": 1.2863334632703496,
+            "mae": 0.08456350198468647,
+            "psnr": 19.939898890311568,
+            "rmse": 0.10078830521570414,
+            "ssim": 0.9403047926329214
           },
           "4": {
-            "mae": 0.005655499226860057,
-            "rmse": 0.055698493866578075,
-            "psnr": 35.37576011343354,
-            "ssim": 0.6036248962459632,
-            "inference_seconds_per_image": 1.4016917928919046
+            "inference_seconds_per_image": 1.583577059270246,
+            "mae": 0.08618339191417436,
+            "psnr": 19.813140495220466,
+            "rmse": 0.10226981457241828,
+            "ssim": 0.9383213639175602
           },
           "5": {
-            "mae": 0.006113964769856712,
-            "rmse": 0.05859060324684939,
-            "psnr": 35.04870881409303,
-            "ssim": 0.5460103385894979,
-            "inference_seconds_per_image": 1.6743306269188882
+            "inference_seconds_per_image": 1.835309877999997,
+            "mae": 0.08751913885007033,
+            "psnr": 19.703886687952956,
+            "rmse": 0.10356370518113456,
+            "ssim": 0.936539480954953
           }
         }
       },
       "preprocessing": [
-        "RGB conversion",
-        "histogram equalization",
+        "OpenCV default 8-bit image read",
+        "intensity inversion with 255-image",
+        "grayscale histogram equalization",
+        "RGB expansion",
         "temporary TIFF handoff for FastAI test_dl"
       ],
-      "training_artifacts_url": "https://drive.google.com/drive/folders/REPLACE_WITH_RETRAINED_V1_ARTIFACT_FOLDER_ID",
-      "notes": "Retrained-v1 checkpoint trained and evaluated on Kaggle P100. Public Drive link is still pending because the current Drive connector does not expose generic binary upload. This is not the historical checkpoint whose URL returned 404.",
+      "training_artifacts_url": "https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-unet-mso-corrected-v3",
+      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. FastAI self-attention was disabled after a P100 CUBLAS_STATUS_NOT_SUPPORTED failure in spectral norm self-attention. Public Drive link is pending; this is not the historical checkpoint whose URL returned 404.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-unet-v1-checkpoint"
     },
     {
@@ -91,16 +94,16 @@
       "available": false,
       "checkpoint_url": "https://drive.google.com/uc?export=download&id=REPLACE_WITH_GAN_MSO2_RETRAINED_V1_FILE_ID",
       "checkpoint_filename": "gan_mso2_retrained_v1.keras",
-      "checkpoint_sha256": "e6d72033d643f378fcd7722d630abf935d590831da5911c8a0f0deaa31f375bd",
-      "default_steps": 2,
+      "checkpoint_sha256": "09525519d3c51d6c7fd0377634bdff4f39ddf314180ea94b9d56fdcd49829dc1",
+      "default_steps": 1,
       "device_support": [
         "cpu",
         "gpu"
       ],
       "examples": [
-        "docs/assets/examples/retrained_v1/JPCLN003_gan_mso2_steps.png",
-        "docs/assets/examples/retrained_v1/JPCNN028_gan_mso2_steps.png",
-        "docs/assets/examples/retrained_v1/JPCNN072_gan_mso2_steps.png"
+        "docs/assets/examples/retrained_v1/JPCLN003_gan_mso2_step1_input_output_target.png",
+        "docs/assets/examples/retrained_v1/JPCNN028_gan_mso2_step1_input_output_target.png",
+        "docs/assets/examples/retrained_v1/JPCNN072_gan_mso2_step1_input_output_target.png"
       ],
       "metrics": {
         "selected_step": 1,
@@ -110,59 +113,62 @@
         "counts": {
           "evaluated": 37
         },
+        "selection_note": "Step 0 is a no-model baseline and excluded from model selection.",
         "steps": {
           "0": {
-            "mae": 0.7542635427938925,
-            "rmse": 0.7789474245899954,
-            "psnr": 2.1865245060692278,
-            "ssim": 0.03931388435743755,
-            "inference_seconds_per_image": 0.03751719543242563
+            "inference_seconds_per_image": 0.05496254797301574,
+            "mae": 0.01866501823973817,
+            "psnr": 29.562923118298166,
+            "rmse": 0.036400364197375835,
+            "ssim": 0.9914400415599506
           },
           "1": {
-            "mae": 0.011330272587066566,
-            "rmse": 0.04633114713168499,
-            "psnr": 27.456800575463888,
-            "ssim": 0.749001302164772,
-            "inference_seconds_per_image": 0.10849678716217137
+            "inference_seconds_per_image": 0.09754934094592721,
+            "mae": 0.02002663615889646,
+            "psnr": 27.802647542390684,
+            "rmse": 0.04224417063516566,
+            "ssim": 0.9892178682453736
           },
           "2": {
-            "mae": 0.3561730650631157,
-            "rmse": 0.42218568313189864,
-            "psnr": 7.507776001838181,
-            "ssim": -0.05168681281819864,
-            "inference_seconds_per_image": 0.12211362667567977
+            "inference_seconds_per_image": 0.16140946878372356,
+            "mae": 0.024498180612116248,
+            "psnr": 26.74005719075712,
+            "rmse": 0.04735676712380671,
+            "ssim": 0.9864795391642381
           },
           "3": {
-            "mae": 0.21908837909231316,
-            "rmse": 0.3330238644289892,
-            "psnr": 10.160234578217183,
-            "ssim": -0.007659456726985824,
-            "inference_seconds_per_image": 0.17602352132432833
+            "inference_seconds_per_image": 0.23389924448652843,
+            "mae": 0.02996504065152761,
+            "psnr": 25.496492343292818,
+            "rmse": 0.05430391393996191,
+            "ssim": 0.982401242374268
           },
           "4": {
-            "mae": 0.17226800050687147,
-            "rmse": 0.26760318360476404,
-            "psnr": 13.262483668299453,
-            "ssim": 0.03172166045717304,
-            "inference_seconds_per_image": 0.22814125005404734
+            "inference_seconds_per_image": 0.31772349178379805,
+            "mae": 0.03523947132398953,
+            "psnr": 24.3782214140325,
+            "rmse": 0.06150183867422467,
+            "ssim": 0.9775919873247055
           },
           "5": {
-            "mae": 0.2892072937778524,
-            "rmse": 0.39477388177370887,
-            "psnr": 9.119546250750506,
-            "ssim": -0.021601184957447117,
-            "inference_seconds_per_image": 0.2857051842702768
+            "inference_seconds_per_image": 0.3943023405135677,
+            "mae": 0.040320883932951336,
+            "psnr": 23.37278652597889,
+            "rmse": 0.06883717945475634,
+            "ssim": 0.9720743607068224
           }
         }
       },
       "preprocessing": [
-        "RGB conversion",
-        "histogram equalization",
+        "OpenCV default 8-bit image read",
+        "intensity inversion with 255-image",
+        "grayscale histogram equalization",
+        "RGB expansion",
         "resize to 256x256 when larger",
         "normalization to [-1, 1]"
       ],
-      "training_artifacts_url": "https://drive.google.com/drive/folders/REPLACE_WITH_RETRAINED_V1_ARTIFACT_FOLDER_ID",
-      "notes": "Retrained-v1 checkpoint trained and evaluated on Kaggle P100. Public Drive link is still pending because the current Drive connector does not expose generic binary upload. The old historical GAN link is intentionally not used for new quantitative claims.",
+      "training_artifacts_url": "https://www.kaggle.com/code/ernestosantiesteban/bone-suppression-gan-mso-corrected-v2",
+      "notes": "Corrected MSO retrained-v1 checkpoint trained and evaluated on Kaggle P100 with notebook-compatible preprocessing. Public Drive link is pending; this is not the historical checkpoint whose URL returned 404.",
       "temporary_kaggle_dataset_url": "https://www.kaggle.com/datasets/ernestosantiesteban/bone-suppression-gan-mso2-retrained-v1-checkpoint"
     }
   ]

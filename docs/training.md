@@ -16,6 +16,12 @@ For U-Net ResNet50 on Tesla P100, Kaggle's default PyTorch CUDA 12.8 wheel may f
 Kaggle runs therefore install PyTorch CUDA 12.6 before importing FastAI. This is recorded in the
 run `environment.json` and `pip_freeze` artifacts.
 
+FastAI self-attention is disabled by default for the Kaggle P100 retraining path. The historical
+notebook used `self_attention=True`, but the corrected run reproduced a P100 CUDA failure inside
+FastAI's spectral-normalized self-attention block:
+`CUBLAS_STATUS_NOT_SUPPORTED`. Set `BONE_SUPPRESSION_UNET_SELF_ATTENTION=1` only on a GPU/runtime
+where that block has been verified.
+
 The notebook writes all generated artifacts under:
 
 ```text
@@ -40,6 +46,22 @@ For monitored long runs, U-Net is split into two Kaggle jobs:
 
 CPU inference is kept for user-facing portability, but the primary reported metrics are generated
 on GPU to keep evaluation turnaround short.
+
+## Historical MSO Preprocessing
+
+The original notebooks did not train on raw JSRT/BSE PNG values. Before training, they wrote a
+processed dataset with:
+
+```python
+img, target = cv2.imread(source_path), cv2.imread(target_path)
+img, target = histeq(255 - img), histeq(255 - target)
+```
+
+where `histeq` converts to grayscale, applies `cv2.equalizeHist`, and expands back to three
+channels. The current training code now reproduces that path for both model families before any
+model-specific resize, augmentation, or normalization. Earlier retrained-v1 checkpoints and visual
+panels created without this step are superseded. The corrected Kaggle reruns are recorded in
+`docs/results.md` and exported as the current retrained-v1 evidence.
 
 ## Local Commands
 
