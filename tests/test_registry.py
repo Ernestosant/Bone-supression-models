@@ -15,8 +15,8 @@ def test_load_default_registry_contains_expected_models() -> None:
     assert set(registry) == {"gan_mso2", "unet_resnet50"}
     assert registry["gan_mso2"].checkpoint_filename == "gan_mso2_retrained_v1.keras"
     assert registry["gan_mso2"].device_support == ("cpu", "gpu")
-    assert registry["gan_mso2"].available is False
-    assert registry["unet_resnet50"].available is False
+    assert registry["gan_mso2"].available is True
+    assert registry["unet_resnet50"].available is True
 
 
 def test_unknown_model_key_lists_available_models() -> None:

@@ -104,10 +104,11 @@ failed visual QA path is traceable.
 
 ## Artifact Availability
 
-The corrected retrained-v1 checkpoints are not redistributed from this repository due to
-size/storage constraints. The repository provides metrics, SHA256 hashes, manifests, scripts,
-visual panels, and reproducibility instructions so the artifacts can be regenerated and checked.
+The corrected retrained-v1 checkpoints are published in the
+[`corrected-mso-v1`](https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1)
+GitHub Release with SHA256 checksums, manifests, metrics, run summaries, and visual panels.
 
-If a public checkpoint release is added later, publish checkpoints, manifests, metrics, and panels
-through Google Drive, Hugging Face, or GitHub Releases; then copy verified direct checkpoint links
-into `configs/model_registry.json` and `src/bone_suppression/resources/model_registry.json`.
+The GAN checkpoint is a single `.keras` asset. The corrected U-Net checkpoint is published as three
+parts because the `.pkl` is larger than a single release asset limit; concatenate `part01`,
+`part02`, and `part03` in order, then verify the reconstructed file against
+`2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b`.

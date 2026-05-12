@@ -54,8 +54,9 @@ Detailed step metrics, manifests, SHA256 values, run summaries, and visual panel
 
 ## Checkpoint Availability
 
-Checkpoints are not redistributed due to size/storage constraints; metrics, hashes, manifests,
-scripts, visual panels, and reproducibility instructions are provided.
+Corrected MSO checkpoints are publicly available in the GitHub Release
+[`corrected-mso-v1`](https://github.com/Ernestosant/Bone-supression-models/releases/tag/corrected-mso-v1),
+alongside metrics, hashes, manifests, scripts, visual panels, and reproducibility instructions.
 
 Local checkpoint filenames and SHA256 values are recorded in the model registry:
 
@@ -64,9 +65,9 @@ Local checkpoint filenames and SHA256 values are recorded in the model registry:
 | `gan_mso2` | `gan_mso2_retrained_v1.keras` | `09525519d3c51d6c7fd0377634bdff4f39ddf314180ea94b9d56fdcd49829dc1` |
 | `unet_resnet50` | `unet_resnet50_retrained_v1.pkl` | `2c2c1d9c728c326608d6bc16123b01f9c23c819b9ab70b30f33a989fd3ca010b` |
 
-If public artifact hosting is added later, the registry should be updated with verified direct
-download links, `available` should be set to `true`, and the SHA256 values should be rechecked
-against the published files.
+The GAN checkpoint is published as a single file. The U-Net checkpoint is published as three split
+parts because the corrected `.pkl` is larger than a single release asset limit; concatenate
+`part01`, `part02`, and `part03` in order to reconstruct the `.pkl`, then verify the SHA256 above.
 
 ## Limitations
 
@@ -89,5 +90,4 @@ medical conclusion, or deploy them in patient-facing workflows without appropria
 regulatory review, privacy review, and clinical oversight.
 
 When sharing results, include the dataset source, preprocessing path, split seed, selected inference
-step, metric table, checkpoint SHA256, and the fact that checkpoint files are not redistributed in
-this repository.
+step, metric table, checkpoint release URL, and checkpoint SHA256.
