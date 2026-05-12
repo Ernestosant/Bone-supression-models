@@ -11,13 +11,14 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from PIL import Image
 
 from bone_suppression.artifacts import build_manifest, write_json
 from bone_suppression.dataset import DATASET_SLUG, DEFAULT_SEED, ImagePair, load_splits
 from bone_suppression.preprocessing import (
     LEGACY_MSO_PREPROCESSING,
     read_legacy_mso_image,
+    resize_to_square,
+    save_legacy_mso_image,
 )
 
 
@@ -279,7 +280,7 @@ def _load_pair_arrays(pair: ImagePair, image_size: int) -> tuple[np.ndarray, np.
 
 
 def _load_normalized_image(path: Path, image_size: int) -> np.ndarray:
-    image = _resize_uint8(read_legacy_mso_image(path), image_size)
+    image = resize_to_square(read_legacy_mso_image(path), image_size)
     array = image.astype(np.float32)
     return array / 127.5 - 1.0
 
@@ -306,25 +307,11 @@ def _prepare_legacy_mso_cache(
         input_path = cache_root / "source" / f"{pair.id}.png"
         target_path = cache_root / "target" / f"{pair.id}.png"
         if not input_path.exists():
-            input_path.parent.mkdir(parents=True, exist_ok=True)
-            Image.fromarray(_resize_uint8(read_legacy_mso_image(pair.input_path), image_size)).save(
-                input_path
-            )
+            save_legacy_mso_image(pair.input_path, input_path, image_size=image_size)
         if not target_path.exists():
-            target_path.parent.mkdir(parents=True, exist_ok=True)
-            target = _resize_uint8(read_legacy_mso_image(pair.target_path), image_size)
-            Image.fromarray(target).save(target_path)
+            save_legacy_mso_image(pair.target_path, target_path, image_size=image_size)
         cached_pairs.append(ImagePair(pair.id, input_path, target_path))
     return cached_pairs
-
-
-def _resize_uint8(image: np.ndarray, image_size: int) -> np.ndarray:
-    try:
-        import cv2
-    except ImportError:  # pragma: no cover - OpenCV is a runtime dependency.
-        resized = Image.fromarray(image).resize((image_size, image_size), Image.BILINEAR)
-        return np.asarray(resized.convert("RGB"))
-    return cv2.resize(image, (image_size, image_size), interpolation=cv2.INTER_LINEAR)
 
 
 def _env_flag(name: str, default: bool) -> bool:

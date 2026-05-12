@@ -89,11 +89,28 @@ def read_legacy_mso_image(path: str | Path) -> np.ndarray:
     return legacy_mso_preprocess(read_cv2_uint8_rgb(path))
 
 
-def save_legacy_mso_image(input_path: str | Path, output_path: str | Path) -> None:
+def save_legacy_mso_image(
+    input_path: str | Path,
+    output_path: str | Path,
+    image_size: int | None = None,
+) -> None:
     """Write a notebook-compatible preprocessed image for cached training datasets."""
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    Image.fromarray(read_legacy_mso_image(input_path)).save(path)
+    image = read_legacy_mso_image(input_path)
+    if image_size is not None:
+        image = resize_to_square(image, image_size)
+    Image.fromarray(image).save(path)
+
+
+def resize_to_square(image: ArrayLikeImage, image_size: int) -> np.ndarray:
+    """Resize an RGB image to a square using the training interpolation path."""
+    rgb = ensure_rgb(image)
+    if cv2 is not None:
+        return cv2.resize(rgb, (image_size, image_size), interpolation=cv2.INTER_LINEAR)
+
+    resized = Image.fromarray(rgb).resize((image_size, image_size), Image.BILINEAR)
+    return np.asarray(resized.convert("RGB"))
 
 
 def resize_if_larger(
@@ -134,7 +151,7 @@ def output_to_uint8_image(
     if array.ndim == 3 and array.shape[-1] == 1:
         array = np.repeat(array, 3, axis=-1)
 
-    array = np.nan_to_num(array.astype(np.float32), nan=0.0, posinf=1.0, neginf=-1.0)
+    array = array.astype(np.float32)
     if not array.size:
         return ensure_rgb(array)
 
@@ -142,17 +159,25 @@ def output_to_uint8_image(
         low, high = source_range
         if high <= low:
             raise ValueError("source_range high value must be greater than low value.")
+        array = np.nan_to_num(array, nan=low, posinf=high, neginf=low)
         scaled = (array - low) / (high - low)
         return ensure_rgb(np.clip(scaled, 0.0, 1.0))
 
-    array_min = float(array.min())
-    array_max = float(array.max())
+    finite = array[np.isfinite(array)]
+    if finite.size == 0:
+        return ensure_rgb(np.nan_to_num(array, nan=0.0, posinf=255.0, neginf=0.0))
+
+    array_min = float(finite.min())
+    array_max = float(finite.max())
     if array_min >= -1.0 and array_max <= 1.0 and array_min < 0.0:
+        array = np.nan_to_num(array, nan=-1.0, posinf=1.0, neginf=-1.0)
         array = array * 0.5 + 0.5
         return ensure_rgb(np.clip(array, 0.0, 1.0))
     if array_min >= 0.0 and array_max <= 1.0:
+        array = np.nan_to_num(array, nan=0.0, posinf=1.0, neginf=0.0)
         return ensure_rgb(np.clip(array, 0.0, 1.0))
     if array_min >= 0.0 and array_max <= 255.0:
+        array = np.nan_to_num(array, nan=0.0, posinf=255.0, neginf=0.0)
         return ensure_rgb(array)
 
     return ensure_rgb(_window_to_uint8(array))
@@ -168,7 +193,8 @@ def _window_to_uint8(array: np.ndarray) -> np.ndarray:
         high = float(finite.max())
     if high <= low:
         return np.zeros(array.shape, dtype=np.uint8)
-    scaled = (array - low) / (high - low)
+    safe = np.nan_to_num(array.astype(np.float32), nan=low, posinf=high, neginf=low)
+    scaled = (safe - low) / (high - low)
     return np.clip(np.round(scaled * 255.0), 0, 255).astype(np.uint8)
 
 

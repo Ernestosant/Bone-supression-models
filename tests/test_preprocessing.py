@@ -11,6 +11,7 @@ from bone_suppression.preprocessing import (
     output_to_uint8_image,
     read_legacy_mso_image,
     resize_if_larger,
+    save_legacy_mso_image,
     validate_steps,
 )
 
@@ -59,6 +60,21 @@ def test_read_legacy_mso_image_handles_16_bit_targets(tmp_path) -> None:
     assert preprocessed.max() <= 255
 
 
+def test_save_legacy_mso_image_can_resize_cached_training_image(tmp_path) -> None:
+    image = np.tile(np.arange(16, dtype=np.uint8).reshape(4, 4), (3, 1, 1)).transpose(1, 2, 0)
+    input_path = tmp_path / "input.png"
+    output_path = tmp_path / "cache" / "input.png"
+    from PIL import Image
+
+    Image.fromarray(image).save(input_path)
+
+    save_legacy_mso_image(input_path, output_path, image_size=2)
+
+    cached = np.asarray(Image.open(output_path))
+    assert cached.shape == (2, 2, 3)
+    assert cached.dtype == np.uint8
+
+
 def test_resize_if_larger_only_resizes_large_images() -> None:
     small = np.zeros((128, 128, 3), dtype=np.uint8)
     large = np.zeros((512, 300, 3), dtype=np.uint8)
@@ -99,6 +115,22 @@ def test_output_to_uint8_image_windows_out_of_range_outputs() -> None:
 
 def test_output_to_uint8_image_uses_explicit_source_range() -> None:
     output = np.array([[[-3.0, 0.0, 3.0]]], dtype=np.float32)
+
+    image = output_to_uint8_image(output, source_range=(-3.0, 3.0))
+
+    assert image.tolist() == [[[0, 127, 255]]]
+
+
+def test_output_to_uint8_image_maps_infinities_for_uint8_outputs() -> None:
+    output = np.array([[[0.0, np.inf, -np.inf]]], dtype=np.float32)
+
+    image = output_to_uint8_image(output)
+
+    assert image.tolist() == [[[0, 255, 0]]]
+
+
+def test_output_to_uint8_image_maps_infinities_for_source_range() -> None:
+    output = np.array([[[-np.inf, 0.0, np.inf]]], dtype=np.float32)
 
     image = output_to_uint8_image(output, source_range=(-3.0, 3.0))
 

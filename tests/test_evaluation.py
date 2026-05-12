@@ -29,7 +29,7 @@ def test_evaluate_checkpoint_writes_metrics_and_predictions(tmp_path, monkeypatc
     checkpoint = tmp_path / "model.keras"
     checkpoint.write_text("fake checkpoint", encoding="utf-8")
 
-    calls = {"load": 0, "predict": 0}
+    calls = {"load": 0, "predict": 0, "read": 0}
 
     def fake_load_model(spec, checkpoint_path, device="auto"):
         calls["load"] += 1
@@ -37,10 +37,16 @@ def test_evaluate_checkpoint_writes_metrics_and_predictions(tmp_path, monkeypatc
 
     def fake_predict_model(model, spec, image, steps=None):
         calls["predict"] += 1
+        assert image[0, 0, 0] == 123
         return image
+
+    def fake_read_cv2_uint8_rgb(path):
+        calls["read"] += 1
+        return np.full((8, 8, 3), 123, dtype=np.uint8)
 
     monkeypatch.setattr(evaluation, "load_model", fake_load_model)
     monkeypatch.setattr(evaluation, "predict_model", fake_predict_model)
+    monkeypatch.setattr(evaluation, "read_cv2_uint8_rgb", fake_read_cv2_uint8_rgb)
 
     payload = evaluation.evaluate_checkpoint(
         model_key="gan_mso2",
@@ -53,7 +59,7 @@ def test_evaluate_checkpoint_writes_metrics_and_predictions(tmp_path, monkeypatc
     )
 
     assert payload["counts"] == {"evaluated": 1}
-    assert calls == {"load": 1, "predict": 1}
+    assert calls == {"load": 1, "predict": 1, "read": 1}
     assert (tmp_path / "evaluation" / "gan_mso2_test_metrics.json").exists()
     assert len(list((tmp_path / "evaluation" / "predictions" / "gan_mso2").glob("*.png"))) == 1
 

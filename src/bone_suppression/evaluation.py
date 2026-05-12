@@ -15,7 +15,11 @@ from bone_suppression.dataset import DATASET_SLUG, load_splits
 from bone_suppression.inference import predict_model
 from bone_suppression.metrics import aggregate_metrics, image_metrics
 from bone_suppression.model_io import load_model
-from bone_suppression.preprocessing import legacy_mso_preprocess, read_legacy_mso_image
+from bone_suppression.preprocessing import (
+    legacy_mso_preprocess,
+    read_cv2_uint8_rgb,
+    read_legacy_mso_image,
+)
 from bone_suppression.registry import get_model_spec
 
 
@@ -49,7 +53,7 @@ def evaluate_checkpoint(
 
     records: list[dict[str, Any]] = []
     for pair in pairs:
-        input_image = _read_rgb(pair.input_path)
+        input_image = read_cv2_uint8_rgb(pair.input_path)
         target_image = read_legacy_mso_image(pair.target_path)
 
         start = time.perf_counter()
@@ -133,7 +137,7 @@ def evaluate_checkpoint_steps(
 
         records: list[dict[str, Any]] = []
         for pair in pairs:
-            input_image = _read_rgb(pair.input_path)
+            input_image = read_cv2_uint8_rgb(pair.input_path)
             target_image = read_legacy_mso_image(pair.target_path)
 
             start = time.perf_counter()
